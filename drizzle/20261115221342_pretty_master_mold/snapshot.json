@@ -1,0 +1,37 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "9eab7dea-15d3-4883-a149-f9f3e9b6db1f",
+  "prevIds": [
+    "9d8dd865-7163-40fc-bd4a-22be5089c9ec"
+  ],
+  "footprints": [
+    {
+      "statementType": "drop_check",
+      "statementTarget": [
+        "table",
+        "public",
+        "reading"
+      ],
+      "writes": [
+        "s|ck|public.reading.raw_len_check",
+        "n|ck|public.reading.raw_len_check",
+        "e|ck|public.reading.raw_len_check",
+        "n|con|public.reading.raw_len_check"
+      ],
+      "reads": [
+        "n|tbl|public.reading",
+        "n|sch|public",
+        "e|col|public.reading.raw",
+        "e|col|public.reading.reading"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "drop",
+      "key": "checks\u0000[\"public\",\"reading\",\"raw_len_check\"]"
+    }
+  ]
+}

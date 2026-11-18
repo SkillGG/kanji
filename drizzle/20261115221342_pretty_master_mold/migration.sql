@@ -1,0 +1,1 @@
+ALTER TABLE "reading" DROP CONSTRAINT "raw_len_check";

@@ -1,0 +1,363 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "de598d77-1e21-461b-829d-f3f821987456",
+  "prevIds": [
+    "6d85dd3e-5d77-4b03-b2fb-71940e9759cd"
+  ],
+  "footprints": [
+    {
+      "statementType": "alter_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "customtag",
+        "sessionID"
+      ],
+      "writes": [
+        "s|colprop|public.customtag.sessionID.notNull"
+      ],
+      "reads": [
+        "n|tbl|public.customtag",
+        "n|sch|public",
+        "n|col|public.customtag.sessionID"
+      ],
+      "sqlHash": "129ed0e6837578d9"
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "customtag",
+        "scope"
+      ],
+      "writes": [
+        "s|colprop|public.customtag.scope.notNull"
+      ],
+      "reads": [
+        "n|tbl|public.customtag",
+        "n|sch|public",
+        "n|col|public.customtag.scope"
+      ],
+      "sqlHash": "801471ca58050417"
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "sentence",
+        "text"
+      ],
+      "writes": [
+        "s|colprop|public.sentence.text.notNull"
+      ],
+      "reads": [
+        "n|tbl|public.sentence",
+        "n|sch|public",
+        "n|col|public.sentence.text"
+      ],
+      "sqlHash": "55336f53942bf96b"
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "sentenceanswer",
+        "sentence"
+      ],
+      "writes": [
+        "s|colprop|public.sentenceanswer.sentence.notNull"
+      ],
+      "reads": [
+        "n|tbl|public.sentenceanswer",
+        "n|sch|public",
+        "n|col|public.sentenceanswer.sentence"
+      ],
+      "sqlHash": "8b027aa057dc17e6"
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "sentenceanswer",
+        "relevance"
+      ],
+      "writes": [
+        "s|colprop|public.sentenceanswer.relevance.notNull"
+      ],
+      "reads": [
+        "n|tbl|public.sentenceanswer",
+        "n|sch|public",
+        "n|col|public.sentenceanswer.relevance"
+      ],
+      "sqlHash": "2e1b10378a587a91"
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "tagToKanji",
+        "tag"
+      ],
+      "writes": [
+        "s|colprop|public.tagToKanji.tag.notNull"
+      ],
+      "reads": [
+        "n|tbl|public.tagToKanji",
+        "n|sch|public",
+        "n|col|public.tagToKanji.tag"
+      ],
+      "sqlHash": "d117ea5afe196beb"
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "tagToKanji",
+        "kanji"
+      ],
+      "writes": [
+        "s|colprop|public.tagToKanji.kanji.notNull"
+      ],
+      "reads": [
+        "n|tbl|public.tagToKanji",
+        "n|sch|public",
+        "n|col|public.tagToKanji.kanji"
+      ],
+      "sqlHash": "7179499adb9dcf80"
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "tagToSentence",
+        "tag"
+      ],
+      "writes": [
+        "s|colprop|public.tagToSentence.tag.notNull"
+      ],
+      "reads": [
+        "n|tbl|public.tagToSentence",
+        "n|sch|public",
+        "n|col|public.tagToSentence.tag"
+      ],
+      "sqlHash": "cd78ddbf68a54978"
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "tagToSentence",
+        "sentence"
+      ],
+      "writes": [
+        "s|colprop|public.tagToSentence.sentence.notNull"
+      ],
+      "reads": [
+        "n|tbl|public.tagToSentence",
+        "n|sch|public",
+        "n|col|public.tagToSentence.sentence"
+      ],
+      "sqlHash": "392445d0a08539ec"
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "tagToWord",
+        "word"
+      ],
+      "writes": [
+        "s|colprop|public.tagToWord.word.notNull"
+      ],
+      "reads": [
+        "n|tbl|public.tagToWord",
+        "n|sch|public",
+        "n|col|public.tagToWord.word"
+      ],
+      "sqlHash": "681420c9db20282c"
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "tagToWord",
+        "tag"
+      ],
+      "writes": [
+        "s|colprop|public.tagToWord.tag.notNull"
+      ],
+      "reads": [
+        "n|tbl|public.tagToWord",
+        "n|sch|public",
+        "n|col|public.tagToWord.tag"
+      ],
+      "sqlHash": "c5c0d22d261a79c8"
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "word",
+        "meaning"
+      ],
+      "writes": [
+        "s|colprop|public.word.meaning.notNull"
+      ],
+      "reads": [
+        "n|tbl|public.word",
+        "n|sch|public",
+        "n|col|public.word.meaning"
+      ],
+      "sqlHash": "4db694b822777987"
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "wordToKanji",
+        "word"
+      ],
+      "writes": [
+        "s|colprop|public.wordToKanji.word.notNull"
+      ],
+      "reads": [
+        "n|tbl|public.wordToKanji",
+        "n|sch|public",
+        "n|col|public.wordToKanji.word"
+      ],
+      "sqlHash": "3c3fddcb314c5022"
+    },
+    {
+      "statementType": "alter_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "wordToKanji",
+        "kanji"
+      ],
+      "writes": [
+        "s|colprop|public.wordToKanji.kanji.notNull"
+      ],
+      "reads": [
+        "n|tbl|public.wordToKanji",
+        "n|sch|public",
+        "n|col|public.wordToKanji.kanji"
+      ],
+      "sqlHash": "f943f4364a08bb89"
+    }
+  ],
+  "deltas": [
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"customtag\",\"sessionID\"]",
+      "set": {
+        "notNull": true
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"customtag\",\"scope\"]",
+      "set": {
+        "notNull": true
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"sentence\",\"text\"]",
+      "set": {
+        "notNull": true
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"sentenceanswer\",\"sentence\"]",
+      "set": {
+        "notNull": true
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"sentenceanswer\",\"relevance\"]",
+      "set": {
+        "notNull": true
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"tagToKanji\",\"tag\"]",
+      "set": {
+        "notNull": true
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"tagToKanji\",\"kanji\"]",
+      "set": {
+        "notNull": true
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"tagToSentence\",\"tag\"]",
+      "set": {
+        "notNull": true
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"tagToSentence\",\"sentence\"]",
+      "set": {
+        "notNull": true
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"tagToWord\",\"word\"]",
+      "set": {
+        "notNull": true
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"tagToWord\",\"tag\"]",
+      "set": {
+        "notNull": true
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"word\",\"meaning\"]",
+      "set": {
+        "notNull": true
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"wordToKanji\",\"word\"]",
+      "set": {
+        "notNull": true
+      }
+    },
+    {
+      "op": "alter",
+      "key": "columns\u0000[\"public\",\"wordToKanji\",\"kanji\"]",
+      "set": {
+        "notNull": true
+      }
+    }
+  ]
+}

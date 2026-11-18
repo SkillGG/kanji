@@ -1,0 +1,1434 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "9d8dd865-7163-40fc-bd4a-22be5089c9ec",
+  "prevIds": [
+    "a706ad00-5bd3-4a99-aa1c-c5b8dcee8efc"
+  ],
+  "footprints": [
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "customtag"
+      ],
+      "writes": [
+        "s|tbl|public.customtag",
+        "n|tbl|public.customtag",
+        "e|tbl|public.customtag",
+        "n|rel|public.customtag",
+        "n|type|public.customtag",
+        "n|rel|public.customtag_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "kanji"
+      ],
+      "writes": [
+        "s|tbl|public.kanji",
+        "n|tbl|public.kanji",
+        "e|tbl|public.kanji",
+        "n|rel|public.kanji",
+        "n|type|public.kanji",
+        "n|rel|public.kanji_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "reading"
+      ],
+      "writes": [
+        "s|tbl|public.reading",
+        "n|tbl|public.reading",
+        "e|tbl|public.reading",
+        "n|rel|public.reading",
+        "n|type|public.reading",
+        "n|rel|public.reading_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "sentence"
+      ],
+      "writes": [
+        "s|tbl|public.sentence",
+        "n|tbl|public.sentence",
+        "e|tbl|public.sentence",
+        "n|rel|public.sentence",
+        "n|type|public.sentence",
+        "n|rel|public.sentence_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "sentenceanswer"
+      ],
+      "writes": [
+        "s|tbl|public.sentenceanswer",
+        "n|tbl|public.sentenceanswer",
+        "e|tbl|public.sentenceanswer",
+        "n|rel|public.sentenceanswer",
+        "n|type|public.sentenceanswer",
+        "n|rel|public.sentenceanswer_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "tag"
+      ],
+      "writes": [
+        "s|tbl|public.tag",
+        "n|tbl|public.tag",
+        "e|tbl|public.tag",
+        "n|rel|public.tag",
+        "n|type|public.tag",
+        "n|rel|public.tag_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "tagToKanji"
+      ],
+      "writes": [
+        "s|tbl|public.tagToKanji",
+        "n|tbl|public.tagToKanji",
+        "e|tbl|public.tagToKanji",
+        "n|rel|public.tagToKanji",
+        "n|type|public.tagToKanji",
+        "n|rel|public.tagToKanji_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "tagToSentence"
+      ],
+      "writes": [
+        "s|tbl|public.tagToSentence",
+        "n|tbl|public.tagToSentence",
+        "e|tbl|public.tagToSentence",
+        "n|rel|public.tagToSentence",
+        "n|type|public.tagToSentence",
+        "n|rel|public.tagToSentence_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "tagToWord"
+      ],
+      "writes": [
+        "s|tbl|public.tagToWord",
+        "n|tbl|public.tagToWord",
+        "e|tbl|public.tagToWord",
+        "n|rel|public.tagToWord",
+        "n|type|public.tagToWord"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "word"
+      ],
+      "writes": [
+        "s|tbl|public.word",
+        "n|tbl|public.word",
+        "e|tbl|public.word",
+        "n|rel|public.word",
+        "n|type|public.word",
+        "n|rel|public.word_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "wordToKanji"
+      ],
+      "writes": [
+        "s|tbl|public.wordToKanji",
+        "n|tbl|public.wordToKanji",
+        "e|tbl|public.wordToKanji",
+        "n|rel|public.wordToKanji",
+        "n|type|public.wordToKanji",
+        "n|rel|public.wordToKanji_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "reading",
+        "reading_raw_idx"
+      ],
+      "writes": [
+        "s|idx|public.reading_raw_idx",
+        "n|idx|public.reading_raw_idx",
+        "e|idx|public.reading_raw_idx",
+        "n|rel|public.reading_raw_idx"
+      ],
+      "reads": [
+        "n|tbl|public.reading",
+        "n|sch|public",
+        "n|col|public.reading.raw"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "reading"
+      ],
+      "writes": [
+        "s|fk|public.reading.reading_word_word_word_fkey",
+        "n|fk|public.reading.reading_word_word_word_fkey",
+        "e|fk|public.reading.reading_word_word_word_fkey",
+        "n|con|public.reading.reading_word_word_word_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.reading",
+        "n|sch|public",
+        "n|tbl|public.word",
+        "n|sch|public",
+        "n|col|public.reading.word",
+        "n|col|public.word.word",
+        "e|uniqueness|public.word.word"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "sentenceanswer"
+      ],
+      "writes": [
+        "s|fk|public.sentenceanswer.sentenceanswer_sentence_sentence_id_fkey",
+        "n|fk|public.sentenceanswer.sentenceanswer_sentence_sentence_id_fkey",
+        "e|fk|public.sentenceanswer.sentenceanswer_sentence_sentence_id_fkey",
+        "n|con|public.sentenceanswer.sentenceanswer_sentence_sentence_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.sentenceanswer",
+        "n|sch|public",
+        "n|tbl|public.sentence",
+        "n|sch|public",
+        "n|col|public.sentenceanswer.sentence",
+        "n|col|public.sentence.id",
+        "e|uniqueness|public.sentence.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "tagToKanji"
+      ],
+      "writes": [
+        "s|fk|public.tagToKanji.tagToKanji_tag_tag_name_fkey",
+        "n|fk|public.tagToKanji.tagToKanji_tag_tag_name_fkey",
+        "e|fk|public.tagToKanji.tagToKanji_tag_tag_name_fkey",
+        "n|con|public.tagToKanji.tagToKanji_tag_tag_name_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.tagToKanji",
+        "n|sch|public",
+        "n|tbl|public.tag",
+        "n|sch|public",
+        "n|col|public.tagToKanji.tag",
+        "n|col|public.tag.name",
+        "e|uniqueness|public.tag.name"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "tagToKanji"
+      ],
+      "writes": [
+        "s|fk|public.tagToKanji.tagToKanji_kanji_kanji_kanji_fkey",
+        "n|fk|public.tagToKanji.tagToKanji_kanji_kanji_kanji_fkey",
+        "e|fk|public.tagToKanji.tagToKanji_kanji_kanji_kanji_fkey",
+        "n|con|public.tagToKanji.tagToKanji_kanji_kanji_kanji_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.tagToKanji",
+        "n|sch|public",
+        "n|tbl|public.kanji",
+        "n|sch|public",
+        "n|col|public.tagToKanji.kanji",
+        "n|col|public.kanji.kanji",
+        "e|uniqueness|public.kanji.kanji"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "tagToSentence"
+      ],
+      "writes": [
+        "s|fk|public.tagToSentence.tagToSentence_tag_tag_name_fkey",
+        "n|fk|public.tagToSentence.tagToSentence_tag_tag_name_fkey",
+        "e|fk|public.tagToSentence.tagToSentence_tag_tag_name_fkey",
+        "n|con|public.tagToSentence.tagToSentence_tag_tag_name_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.tagToSentence",
+        "n|sch|public",
+        "n|tbl|public.tag",
+        "n|sch|public",
+        "n|col|public.tagToSentence.tag",
+        "n|col|public.tag.name",
+        "e|uniqueness|public.tag.name"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "tagToSentence"
+      ],
+      "writes": [
+        "s|fk|public.tagToSentence.tagToSentence_sentence_sentence_id_fkey",
+        "n|fk|public.tagToSentence.tagToSentence_sentence_sentence_id_fkey",
+        "e|fk|public.tagToSentence.tagToSentence_sentence_sentence_id_fkey",
+        "n|con|public.tagToSentence.tagToSentence_sentence_sentence_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.tagToSentence",
+        "n|sch|public",
+        "n|tbl|public.sentence",
+        "n|sch|public",
+        "n|col|public.tagToSentence.sentence",
+        "n|col|public.sentence.id",
+        "e|uniqueness|public.sentence.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "tagToWord"
+      ],
+      "writes": [
+        "s|fk|public.tagToWord.tagToWord_word_word_word_fkey",
+        "n|fk|public.tagToWord.tagToWord_word_word_word_fkey",
+        "e|fk|public.tagToWord.tagToWord_word_word_word_fkey",
+        "n|con|public.tagToWord.tagToWord_word_word_word_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.tagToWord",
+        "n|sch|public",
+        "n|tbl|public.word",
+        "n|sch|public",
+        "n|col|public.tagToWord.word",
+        "n|col|public.word.word",
+        "e|uniqueness|public.word.word"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "tagToWord"
+      ],
+      "writes": [
+        "s|fk|public.tagToWord.tagToWord_tag_tag_name_fkey",
+        "n|fk|public.tagToWord.tagToWord_tag_tag_name_fkey",
+        "e|fk|public.tagToWord.tagToWord_tag_tag_name_fkey",
+        "n|con|public.tagToWord.tagToWord_tag_tag_name_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.tagToWord",
+        "n|sch|public",
+        "n|tbl|public.tag",
+        "n|sch|public",
+        "n|col|public.tagToWord.tag",
+        "n|col|public.tag.name",
+        "e|uniqueness|public.tag.name"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "wordToKanji"
+      ],
+      "writes": [
+        "s|fk|public.wordToKanji.wordToKanji_word_word_word_fkey",
+        "n|fk|public.wordToKanji.wordToKanji_word_word_word_fkey",
+        "e|fk|public.wordToKanji.wordToKanji_word_word_word_fkey",
+        "n|con|public.wordToKanji.wordToKanji_word_word_word_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.wordToKanji",
+        "n|sch|public",
+        "n|tbl|public.word",
+        "n|sch|public",
+        "n|col|public.wordToKanji.word",
+        "n|col|public.word.word",
+        "e|uniqueness|public.word.word"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "wordToKanji"
+      ],
+      "writes": [
+        "s|fk|public.wordToKanji.wordToKanji_kanji_kanji_kanji_fkey",
+        "n|fk|public.wordToKanji.wordToKanji_kanji_kanji_kanji_fkey",
+        "e|fk|public.wordToKanji.wordToKanji_kanji_kanji_kanji_fkey",
+        "n|con|public.wordToKanji.wordToKanji_kanji_kanji_kanji_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.wordToKanji",
+        "n|sch|public",
+        "n|tbl|public.kanji",
+        "n|sch|public",
+        "n|col|public.wordToKanji.kanji",
+        "n|col|public.kanji.kanji",
+        "e|uniqueness|public.kanji.kanji"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "customtag",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "kanji",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "reading",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "sentence",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "sentenceanswer",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "tag",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "tagToKanji",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "tagToSentence",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "tagToWord",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "word",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "wordToKanji",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "customtag",
+        "name": "tag",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "customtag",
+        "name": "sessionID",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "customtag",
+        "name": "scope",
+        "type": "jsonb",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "kanji",
+        "name": "kanji",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "kanji",
+        "name": "onyomi",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 1,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "kanji",
+        "name": "kunyomi",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 1,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "kanji",
+        "name": "meaning",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 1,
+        "default": "'{}'",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reading",
+        "name": "reading",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reading",
+        "name": "word",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reading",
+        "name": "raw",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": {
+          "as": "get_raw_reading(\"reading\".\"word\", \"reading\".\"reading\")",
+          "type": "stored"
+        },
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "sentence",
+        "name": "id",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "sentence",
+        "name": "text",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "sentenceanswer",
+        "name": "id",
+        "type": "serial",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "sentenceanswer",
+        "name": "sentence",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "sentenceanswer",
+        "name": "answer",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "sentenceanswer",
+        "name": "relevance",
+        "type": "numeric",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tag",
+        "name": "name",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToKanji",
+        "name": "relid",
+        "type": "serial",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToKanji",
+        "name": "tag",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToKanji",
+        "name": "kanji",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToSentence",
+        "name": "relid",
+        "type": "serial",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToSentence",
+        "name": "tag",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToSentence",
+        "name": "sentence",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToWord",
+        "name": "relid",
+        "type": "serial",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToWord",
+        "name": "word",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToWord",
+        "name": "tag",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "word",
+        "name": "word",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "word",
+        "name": "meaning",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 1,
+        "default": "'{}'",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "wordToKanji",
+        "name": "relid",
+        "type": "serial",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "wordToKanji",
+        "name": "word",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "wordToKanji",
+        "name": "kanji",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reading",
+        "name": "reading_raw_idx",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "raw",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": false,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reading",
+        "name": "reading_word_word_word_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "word"
+        ],
+        "schemaTo": "public",
+        "tableTo": "word",
+        "columnsTo": [
+          "word"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "sentenceanswer",
+        "name": "sentenceanswer_sentence_sentence_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "sentence"
+        ],
+        "schemaTo": "public",
+        "tableTo": "sentence",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToKanji",
+        "name": "tagToKanji_tag_tag_name_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tag"
+        ],
+        "schemaTo": "public",
+        "tableTo": "tag",
+        "columnsTo": [
+          "name"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToKanji",
+        "name": "tagToKanji_kanji_kanji_kanji_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "kanji"
+        ],
+        "schemaTo": "public",
+        "tableTo": "kanji",
+        "columnsTo": [
+          "kanji"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToSentence",
+        "name": "tagToSentence_tag_tag_name_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tag"
+        ],
+        "schemaTo": "public",
+        "tableTo": "tag",
+        "columnsTo": [
+          "name"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToSentence",
+        "name": "tagToSentence_sentence_sentence_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "sentence"
+        ],
+        "schemaTo": "public",
+        "tableTo": "sentence",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToWord",
+        "name": "tagToWord_word_word_word_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "word"
+        ],
+        "schemaTo": "public",
+        "tableTo": "word",
+        "columnsTo": [
+          "word"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToWord",
+        "name": "tagToWord_tag_tag_name_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tag"
+        ],
+        "schemaTo": "public",
+        "tableTo": "tag",
+        "columnsTo": [
+          "name"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "wordToKanji",
+        "name": "wordToKanji_word_word_word_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "word"
+        ],
+        "schemaTo": "public",
+        "tableTo": "word",
+        "columnsTo": [
+          "word"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "wordToKanji",
+        "name": "wordToKanji_kanji_kanji_kanji_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "kanji"
+        ],
+        "schemaTo": "public",
+        "tableTo": "kanji",
+        "columnsTo": [
+          "kanji"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reading",
+        "name": "reading_pkey",
+        "columns": [
+          "word",
+          "reading"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "customtag",
+        "name": "customtag_pkey",
+        "columns": [
+          "tag"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "kanji",
+        "name": "kanji_pkey",
+        "columns": [
+          "kanji"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "sentence",
+        "name": "sentence_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "sentenceanswer",
+        "name": "sentenceanswer_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tag",
+        "name": "tag_pkey",
+        "columns": [
+          "name"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToKanji",
+        "name": "tagToKanji_pkey",
+        "columns": [
+          "relid"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToSentence",
+        "name": "tagToSentence_pkey",
+        "columns": [
+          "relid"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "word",
+        "name": "word_pkey",
+        "columns": [
+          "word"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "wordToKanji",
+        "name": "wordToKanji_pkey",
+        "columns": [
+          "relid"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reading",
+        "name": "raw_len_check",
+        "value": "(length(raw) >= length(reading))",
+        "entityType": "checks"
+      }
+    }
+  ]
+}

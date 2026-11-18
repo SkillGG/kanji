@@ -1,0 +1,366 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "6d85dd3e-5d77-4b03-b2fb-71940e9759cd",
+  "prevIds": [
+    "9eab7dea-15d3-4883-a149-f9f3e9b6db1f"
+  ],
+  "footprints": [
+    {
+      "statementType": "add_pk",
+      "statementTarget": [
+        "table",
+        "public",
+        "tagToWord"
+      ],
+      "writes": [
+        "s|pk|public.tagToWord",
+        "n|pk|public.tagToWord",
+        "e|pk|public.tagToWord",
+        "n|con|public.tagToWord.tagToWord_pkey",
+        "n|rel|public.tagToWord_pkey"
+      ],
+      "reads": [
+        "n|tbl|public.tagToWord",
+        "n|sch|public",
+        "n|col|public.tagToWord.relid"
+      ]
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "reading"
+      ],
+      "writes": [
+        "s|fk|public.reading.reading_word_word_word_fkey",
+        "n|fk|public.reading.reading_word_word_word_fkey",
+        "e|fk|public.reading.reading_word_word_word_fkey",
+        "n|con|public.reading.reading_word_word_word_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.reading",
+        "n|sch|public",
+        "n|tbl|public.word",
+        "n|sch|public",
+        "n|col|public.reading.word",
+        "n|col|public.word.word",
+        "e|uniqueness|public.word.word"
+      ],
+      "sqlHash": "85757caac839fe8e"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "sentenceanswer"
+      ],
+      "writes": [
+        "s|fk|public.sentenceanswer.sentenceanswer_sentence_sentence_id_fkey",
+        "n|fk|public.sentenceanswer.sentenceanswer_sentence_sentence_id_fkey",
+        "e|fk|public.sentenceanswer.sentenceanswer_sentence_sentence_id_fkey",
+        "n|con|public.sentenceanswer.sentenceanswer_sentence_sentence_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.sentenceanswer",
+        "n|sch|public",
+        "n|tbl|public.sentence",
+        "n|sch|public",
+        "n|col|public.sentenceanswer.sentence",
+        "n|col|public.sentence.id",
+        "e|uniqueness|public.sentence.id"
+      ],
+      "sqlHash": "402364904c607ee9"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "tagToKanji"
+      ],
+      "writes": [
+        "s|fk|public.tagToKanji.tagToKanji_tag_tag_name_fkey",
+        "n|fk|public.tagToKanji.tagToKanji_tag_tag_name_fkey",
+        "e|fk|public.tagToKanji.tagToKanji_tag_tag_name_fkey",
+        "n|con|public.tagToKanji.tagToKanji_tag_tag_name_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.tagToKanji",
+        "n|sch|public",
+        "n|tbl|public.tag",
+        "n|sch|public",
+        "n|col|public.tagToKanji.tag",
+        "n|col|public.tag.name",
+        "e|uniqueness|public.tag.name"
+      ],
+      "sqlHash": "5919ac98feb4b379"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "tagToKanji"
+      ],
+      "writes": [
+        "s|fk|public.tagToKanji.tagToKanji_kanji_kanji_kanji_fkey",
+        "n|fk|public.tagToKanji.tagToKanji_kanji_kanji_kanji_fkey",
+        "e|fk|public.tagToKanji.tagToKanji_kanji_kanji_kanji_fkey",
+        "n|con|public.tagToKanji.tagToKanji_kanji_kanji_kanji_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.tagToKanji",
+        "n|sch|public",
+        "n|tbl|public.kanji",
+        "n|sch|public",
+        "n|col|public.tagToKanji.kanji",
+        "n|col|public.kanji.kanji",
+        "e|uniqueness|public.kanji.kanji"
+      ],
+      "sqlHash": "f2de52f9f484a7b8"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "tagToSentence"
+      ],
+      "writes": [
+        "s|fk|public.tagToSentence.tagToSentence_tag_tag_name_fkey",
+        "n|fk|public.tagToSentence.tagToSentence_tag_tag_name_fkey",
+        "e|fk|public.tagToSentence.tagToSentence_tag_tag_name_fkey",
+        "n|con|public.tagToSentence.tagToSentence_tag_tag_name_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.tagToSentence",
+        "n|sch|public",
+        "n|tbl|public.tag",
+        "n|sch|public",
+        "n|col|public.tagToSentence.tag",
+        "n|col|public.tag.name",
+        "e|uniqueness|public.tag.name"
+      ],
+      "sqlHash": "00fa9b3ad80c8c73"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "tagToSentence"
+      ],
+      "writes": [
+        "s|fk|public.tagToSentence.tagToSentence_sentence_sentence_id_fkey",
+        "n|fk|public.tagToSentence.tagToSentence_sentence_sentence_id_fkey",
+        "e|fk|public.tagToSentence.tagToSentence_sentence_sentence_id_fkey",
+        "n|con|public.tagToSentence.tagToSentence_sentence_sentence_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.tagToSentence",
+        "n|sch|public",
+        "n|tbl|public.sentence",
+        "n|sch|public",
+        "n|col|public.tagToSentence.sentence",
+        "n|col|public.sentence.id",
+        "e|uniqueness|public.sentence.id"
+      ],
+      "sqlHash": "e969c08b0b64e38a"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "tagToWord"
+      ],
+      "writes": [
+        "s|fk|public.tagToWord.tagToWord_word_word_word_fkey",
+        "n|fk|public.tagToWord.tagToWord_word_word_word_fkey",
+        "e|fk|public.tagToWord.tagToWord_word_word_word_fkey",
+        "n|con|public.tagToWord.tagToWord_word_word_word_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.tagToWord",
+        "n|sch|public",
+        "n|tbl|public.word",
+        "n|sch|public",
+        "n|col|public.tagToWord.word",
+        "n|col|public.word.word",
+        "e|uniqueness|public.word.word"
+      ],
+      "sqlHash": "c39d586088cdc1f1"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "tagToWord"
+      ],
+      "writes": [
+        "s|fk|public.tagToWord.tagToWord_tag_tag_name_fkey",
+        "n|fk|public.tagToWord.tagToWord_tag_tag_name_fkey",
+        "e|fk|public.tagToWord.tagToWord_tag_tag_name_fkey",
+        "n|con|public.tagToWord.tagToWord_tag_tag_name_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.tagToWord",
+        "n|sch|public",
+        "n|tbl|public.tag",
+        "n|sch|public",
+        "n|col|public.tagToWord.tag",
+        "n|col|public.tag.name",
+        "e|uniqueness|public.tag.name"
+      ],
+      "sqlHash": "3f88e6774b2a1cd1"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "wordToKanji"
+      ],
+      "writes": [
+        "s|fk|public.wordToKanji.wordToKanji_word_word_word_fkey",
+        "n|fk|public.wordToKanji.wordToKanji_word_word_word_fkey",
+        "e|fk|public.wordToKanji.wordToKanji_word_word_word_fkey",
+        "n|con|public.wordToKanji.wordToKanji_word_word_word_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.wordToKanji",
+        "n|sch|public",
+        "n|tbl|public.word",
+        "n|sch|public",
+        "n|col|public.wordToKanji.word",
+        "n|col|public.word.word",
+        "e|uniqueness|public.word.word"
+      ],
+      "sqlHash": "ff8ffd78a6576868"
+    },
+    {
+      "statementType": "recreate_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "wordToKanji"
+      ],
+      "writes": [
+        "s|fk|public.wordToKanji.wordToKanji_kanji_kanji_kanji_fkey",
+        "n|fk|public.wordToKanji.wordToKanji_kanji_kanji_kanji_fkey",
+        "e|fk|public.wordToKanji.wordToKanji_kanji_kanji_kanji_fkey",
+        "n|con|public.wordToKanji.wordToKanji_kanji_kanji_kanji_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.wordToKanji",
+        "n|sch|public",
+        "n|tbl|public.kanji",
+        "n|sch|public",
+        "n|col|public.wordToKanji.kanji",
+        "n|col|public.kanji.kanji",
+        "e|uniqueness|public.kanji.kanji"
+      ],
+      "sqlHash": "d8e191536f33e0ef"
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToWord",
+        "name": "tagToWord_pkey",
+        "columns": [
+          "relid"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"reading\",\"reading_word_word_word_fkey\"]",
+      "set": {
+        "onUpdate": "CASCADE",
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"sentenceanswer\",\"sentenceanswer_sentence_sentence_id_fkey\"]",
+      "set": {
+        "onUpdate": "CASCADE",
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"tagToKanji\",\"tagToKanji_tag_tag_name_fkey\"]",
+      "set": {
+        "onUpdate": "CASCADE",
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"tagToKanji\",\"tagToKanji_kanji_kanji_kanji_fkey\"]",
+      "set": {
+        "onUpdate": "CASCADE",
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"tagToSentence\",\"tagToSentence_tag_tag_name_fkey\"]",
+      "set": {
+        "onUpdate": "CASCADE",
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"tagToSentence\",\"tagToSentence_sentence_sentence_id_fkey\"]",
+      "set": {
+        "onUpdate": "CASCADE",
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"tagToWord\",\"tagToWord_word_word_word_fkey\"]",
+      "set": {
+        "onUpdate": "CASCADE",
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"tagToWord\",\"tagToWord_tag_tag_name_fkey\"]",
+      "set": {
+        "onUpdate": "CASCADE",
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"wordToKanji\",\"wordToKanji_word_word_word_fkey\"]",
+      "set": {
+        "onUpdate": "CASCADE",
+        "onDelete": "CASCADE"
+      }
+    },
+    {
+      "op": "alter",
+      "key": "fks\u0000[\"public\",\"wordToKanji\",\"wordToKanji_kanji_kanji_kanji_fkey\"]",
+      "set": {
+        "onUpdate": "CASCADE",
+        "onDelete": "CASCADE"
+      }
+    }
+  ]
+}
