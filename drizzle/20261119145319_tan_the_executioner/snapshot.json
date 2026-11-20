@@ -1,0 +1,397 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "0c6d8174-d51e-44cf-a62e-001ab60bb166",
+  "prevIds": [
+    "de598d77-1e21-461b-829d-f3f821987456"
+  ],
+  "footprints": [
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "tagToKanji",
+        "idx_ttk_tag"
+      ],
+      "writes": [
+        "s|idx|public.idx_ttk_tag",
+        "n|idx|public.idx_ttk_tag",
+        "e|idx|public.idx_ttk_tag",
+        "n|rel|public.idx_ttk_tag"
+      ],
+      "reads": [
+        "n|tbl|public.tagToKanji",
+        "n|sch|public",
+        "n|col|public.tagToKanji.tag"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "tagToKanji",
+        "uidx_ttk"
+      ],
+      "writes": [
+        "s|idx|public.uidx_ttk",
+        "n|idx|public.uidx_ttk",
+        "e|idx|public.uidx_ttk",
+        "n|rel|public.uidx_ttk"
+      ],
+      "reads": [
+        "n|tbl|public.tagToKanji",
+        "n|sch|public",
+        "n|col|public.tagToKanji.kanji",
+        "n|col|public.tagToKanji.tag"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "tagToSentence",
+        "idx_tts_tag"
+      ],
+      "writes": [
+        "s|idx|public.idx_tts_tag",
+        "n|idx|public.idx_tts_tag",
+        "e|idx|public.idx_tts_tag",
+        "n|rel|public.idx_tts_tag"
+      ],
+      "reads": [
+        "n|tbl|public.tagToSentence",
+        "n|sch|public",
+        "n|col|public.tagToSentence.tag"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "tagToSentence",
+        "uidx_tts"
+      ],
+      "writes": [
+        "s|idx|public.uidx_tts",
+        "n|idx|public.uidx_tts",
+        "e|idx|public.uidx_tts",
+        "n|rel|public.uidx_tts"
+      ],
+      "reads": [
+        "n|tbl|public.tagToSentence",
+        "n|sch|public",
+        "n|col|public.tagToSentence.sentence",
+        "n|col|public.tagToSentence.tag"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "tagToWord",
+        "idx_ttw_tag"
+      ],
+      "writes": [
+        "s|idx|public.idx_ttw_tag",
+        "n|idx|public.idx_ttw_tag",
+        "e|idx|public.idx_ttw_tag",
+        "n|rel|public.idx_ttw_tag"
+      ],
+      "reads": [
+        "n|tbl|public.tagToWord",
+        "n|sch|public",
+        "n|col|public.tagToWord.tag"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "tagToWord",
+        "uidx_ttw"
+      ],
+      "writes": [
+        "s|idx|public.uidx_ttw",
+        "n|idx|public.uidx_ttw",
+        "e|idx|public.uidx_ttw",
+        "n|rel|public.uidx_ttw"
+      ],
+      "reads": [
+        "n|tbl|public.tagToWord",
+        "n|sch|public",
+        "n|col|public.tagToWord.word",
+        "n|col|public.tagToWord.tag"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "wordToKanji",
+        "idx_wtk_word"
+      ],
+      "writes": [
+        "s|idx|public.idx_wtk_word",
+        "n|idx|public.idx_wtk_word",
+        "e|idx|public.idx_wtk_word",
+        "n|rel|public.idx_wtk_word"
+      ],
+      "reads": [
+        "n|tbl|public.wordToKanji",
+        "n|sch|public",
+        "n|col|public.wordToKanji.word"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "wordToKanji",
+        "uidx_wtk"
+      ],
+      "writes": [
+        "s|idx|public.uidx_wtk",
+        "n|idx|public.uidx_wtk",
+        "e|idx|public.uidx_wtk",
+        "n|rel|public.uidx_wtk"
+      ],
+      "reads": [
+        "n|tbl|public.wordToKanji",
+        "n|sch|public",
+        "n|col|public.wordToKanji.kanji",
+        "n|col|public.wordToKanji.word"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToKanji",
+        "name": "idx_ttk_tag",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "tag",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": false,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToKanji",
+        "name": "uidx_ttk",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "kanji",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          },
+          {
+            "value": "tag",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": true,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToSentence",
+        "name": "idx_tts_tag",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "tag",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": false,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToSentence",
+        "name": "uidx_tts",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "sentence",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          },
+          {
+            "value": "tag",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": true,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToWord",
+        "name": "idx_ttw_tag",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "tag",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": false,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "tagToWord",
+        "name": "uidx_ttw",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "word",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          },
+          {
+            "value": "tag",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": true,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "wordToKanji",
+        "name": "idx_wtk_word",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "word",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": false,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "wordToKanji",
+        "name": "uidx_wtk",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "kanji",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          },
+          {
+            "value": "word",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": true,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    }
+  ]
+}

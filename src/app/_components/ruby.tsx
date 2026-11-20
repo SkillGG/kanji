@@ -47,7 +47,6 @@ export const JapaneseRuby = ({
   ruby?: DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
 } & DetailedHTMLProps<HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>) => {
   const spReading = parseReadingData(text, reading);
-  // console.log(spReading);
 
   const newKey = typeof rest.key === "string" ? `${rest.key}_` : text;
   return (

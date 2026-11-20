@@ -827,14 +827,6 @@ export type TagShortcut = {
 
 export const tagShortcuts: TagShortcut[] = [
   {
-    code: /^F(?<jlpt>[1-5])$/gi,
-    caps: true,
-    extract: (r: RegExpExecArray) => {
-      const jlpt = r?.groups?.jlpt;
-      return jlpt ? [`(n${jlpt})`] : [];
-    },
-  },
-  {
     code: /^KeyA$/gi,
     caps: true,
     extract: (r: RegExpExecArray) => {

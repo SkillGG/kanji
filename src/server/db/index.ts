@@ -12,10 +12,10 @@ const globalForDb = globalThis as unknown as {
   conn: postgres.Sql | undefined;
 };
 
-const conn = globalForDb.conn ?? postgres(env.DATABASE_URL);
-if (env.NODE_ENV !== "production") globalForDb.conn = conn;
+const client = globalForDb.conn ?? postgres(env.DATABASE_URL);
+if (env.NODE_ENV !== "production") globalForDb.conn = client;
 
-export const db = drizzle({ client: conn, relations: relations });
+export const db = drizzle({ client, relations });
 export type DrizzleDB = typeof db;
 export type DrizzleTX = Parameters<Parameters<DrizzleDB["transaction"]>[0]>[0];
 export type DrizzleClient = DrizzleDB | DrizzleTX;

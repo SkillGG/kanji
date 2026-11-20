@@ -46,10 +46,4 @@ export const relations = defineRelations(schema, (r) => ({
       to: r.sentenceanswer.sentence,
     }),
   },
-  sentenceanswer: {
-    sentence: r.one.sentence({
-      from: r.sentenceanswer.sentence,
-      to: r.sentence.id,
-    }),
-  },
 }));

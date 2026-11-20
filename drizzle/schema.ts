@@ -7,6 +7,7 @@ import {
   jsonb,
   primaryKey,
   index,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { SQL, sql } from "drizzle-orm";
 
@@ -68,42 +69,70 @@ export const customtag = table("customtag", {
   scope: jsonb().notNull(),
 });
 
-export const tagToWord = table("tagToWord", {
-  relid: int_ai().primaryKey(),
-  word: str()
-    .notNull()
-    .references(() => word.word, cascadeAll),
-  tag: str()
-    .notNull()
-    .references(() => tag.name, cascadeAll),
-});
+export const tagToWord = table(
+  "tagToWord",
+  {
+    relid: int_ai().primaryKey(),
+    word: str()
+      .notNull()
+      .references(() => word.word, cascadeAll),
+    tag: str()
+      .notNull()
+      .references(() => tag.name, cascadeAll),
+  },
+  (t) => [
+    index("idx_ttw_tag").on(t.tag),
+    uniqueIndex("uidx_ttw").on(t.word, t.tag),
+  ],
+);
 
-export const tagToKanji = table("tagToKanji", {
-  relid: int_ai().primaryKey(),
-  tag: str()
-    .notNull()
-    .references(() => tag.name, cascadeAll),
-  kanji: str()
-    .notNull()
-    .references(() => kanji.kanji, cascadeAll),
-});
+export const tagToKanji = table(
+  "tagToKanji",
+  {
+    relid: int_ai().primaryKey(),
+    tag: str()
+      .notNull()
+      .references(() => tag.name, cascadeAll),
+    kanji: str()
+      .notNull()
+      .references(() => kanji.kanji, cascadeAll),
+  },
+  (t) => [
+    index("idx_ttk_tag").on(t.tag),
+    uniqueIndex("uidx_ttk").on(t.kanji, t.tag),
+  ],
+);
 
-export const tagToSentence = table("tagToSentence", {
-  relid: int_ai().primaryKey(),
-  tag: str()
-    .notNull()
-    .references(() => tag.name, cascadeAll),
-  sentence: str()
-    .notNull()
-    .references(() => sentence.id, cascadeAll),
-});
+export const tagToSentence = table(
+  "tagToSentence",
+  {
+    relid: int_ai().primaryKey(),
+    tag: str()
+      .notNull()
+      .references(() => tag.name, cascadeAll),
+    sentence: str()
+      .notNull()
+      .references(() => sentence.id, cascadeAll),
+  },
+  (t) => [
+    index("idx_tts_tag").on(t.tag),
+    uniqueIndex("uidx_tts").on(t.sentence, t.tag),
+  ],
+);
 
-export const wordToKanji = table("wordToKanji", {
-  relid: int_ai().primaryKey(),
-  word: str()
-    .notNull()
-    .references(() => word.word, cascadeAll),
-  kanji: str()
-    .notNull()
-    .references(() => kanji.kanji, cascadeAll),
-});
+export const wordToKanji = table(
+  "wordToKanji",
+  {
+    relid: int_ai().primaryKey(),
+    word: str()
+      .notNull()
+      .references(() => word.word, cascadeAll),
+    kanji: str()
+      .notNull()
+      .references(() => kanji.kanji, cascadeAll),
+  },
+  (t) => [
+    index("idx_wtk_word").on(t.word),
+    uniqueIndex("uidx_wtk").on(t.kanji, t.word),
+  ],
+);

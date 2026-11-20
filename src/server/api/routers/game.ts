@@ -18,12 +18,18 @@ import {
   getParsedScope,
   getWordCards,
 } from "~/server/db/crud";
+import chalk from "chalk";
 
 export const gameRouter = createTRPCRouter({
   getGameDataFromScope: publicProcedure
     .input(z.object({ scope: SessionScope }))
     .query(async ({ ctx, input: { scope } }) => {
       const pScope = await getParsedScope(ctx.db, scope);
+      console.log(
+        scope,
+        chalk.red("Server got above scope scopes and parsed it"),
+        pScope,
+      );
       const gD = await getCardsWithoutAnswers(ctx.db, pScope);
 
       const [whole, hole /* sentences */] = await Promise.all([

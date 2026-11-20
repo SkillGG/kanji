@@ -4,9 +4,10 @@ import {
   tagToWord,
   tag,
   customtag,
+  word,
 } from "@/drizzle/schema";
 import type { DrizzleClient } from ".";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import {
   dedupe,
   isInRange,
@@ -27,6 +28,8 @@ import {
 } from "~/lib/game";
 import type { SessionScope } from "~/lib/sessionScope";
 import { extractTags } from "~/lib/tags";
+
+import chalk from "chalk";
 
 export const setWordTags = async (
   db: DrizzleClient,
@@ -94,6 +97,17 @@ const buildTagFilter = (wTags: string[], kTags: string[]) => {
   return conditions.length ? { OR: conditions } : undefined;
 };
 
+const buildWordFilter = (words: string[], kanji: string[]) => {
+  const filters = [
+    ...(words.length ? [{ word: { in: words } }] : []),
+    ...(kanji.length
+      ? [{ RAW: (t: typeof word) => sql`${t.word} ~ ${`[${kanji.join("")}]`}` }]
+      : []),
+  ];
+  if (filters.length === 0) return undefined;
+  return filters.length === 1 ? filters[0] : { OR: filters };
+};
+
 export const getWordsFromCustomRange = async (
   db: DrizzleClient,
   range: TrainingRange,
@@ -102,7 +116,6 @@ export const getWordsFromCustomRange = async (
   limit?: number,
   page = 0,
 ): Promise<CardWord[]> => {
-  if (!range.word.length) return [];
   const words = await db.query.word.findMany({
     columns: { word: true, meaning: true },
     with: {
@@ -125,7 +138,7 @@ export const getWordsFromCustomRange = async (
       },
     },
     where: {
-      word: { in: range.word },
+      ...buildWordFilter(range.word, range.kanji),
       ...buildTagFilter(wTags, kTags),
     },
     limit,
@@ -242,6 +255,7 @@ export const getCardsWithoutAnswers = async (
   const cards = (await getWordCards(db, scope)).filter(
     (c) => c.meaning.length && c.reading.length,
   );
+
   for (const mode of modes) {
     if (mode === "word_whole") {
       for (const card of cards) {
@@ -260,16 +274,18 @@ export const getCardsWithoutAnswers = async (
         const wordChars = [...card.word];
         for (const char of wordChars) {
           i++;
-          console.log("For k", char, "in", card.word);
           const kanji = card.kanji.find((z) => z.kanji === char);
           if (!kanji) continue;
           if (!isInRange(char, scope.customrange?.kanji)) {
-            console.log("Thrown out bc not in range", scope.customrange);
+            console.log(
+              chalk.red("Thrown out bc not in range"),
+              scope.customrange,
+            );
             continue;
           }
           if (kTags.length && !kanji.tags.some((t) => isTagInInput(t, kTags))) {
             console.log(
-              "Thrown out kanji bc of tags ",
+              chalk.red("Thrown out kanji bc of tags "),
               kanji.tags,
               kTags,
               kanji.tags.map((kt) => isTagInInput(kt, kTags)),
@@ -283,7 +299,6 @@ export const getCardsWithoutAnswers = async (
             reading: card.reading,
             holedWord: w.join(""),
           };
-          console.log("Adding word", question.holedWord, card.word, i);
           gameData.hole.push({
             word: card,
             question,

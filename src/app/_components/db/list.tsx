@@ -8,7 +8,6 @@ import { useEffect, useMemo, useState } from "react";
 import { api } from "~/trpc/react";
 import { SpinnerOrText } from "../spinnerOn";
 import { cn } from "cn";
-import { getFullWordRading } from "~/lib/utils";
 import { useDebounce } from "~/lib/hooks";
 
 export const DBList = () => {
@@ -110,7 +109,10 @@ export const DBList = () => {
                 <WordRecord
                   key={w.word}
                   nth={i}
-                  {...w}
+                  word={w.word}
+                  meaning={w.meaning}
+                  reading={w.reading}
+                  tags={w.tag}
                   canEdit
                   update={() => utils.db.getWords.invalidate()}
                 />
@@ -175,7 +177,11 @@ export const DBList = () => {
                 <KanjiRecord
                   key={k.kanji}
                   nth={i}
-                  {...k}
+                  kanji={k.kanji}
+                  kunyomi={k.kunyomi}
+                  meaning={k.meaning}
+                  onyomi={k.onyomi}
+                  tags={k.tag}
                   update={() => utils.db.getKanji.invalidate()}
                 />
               );

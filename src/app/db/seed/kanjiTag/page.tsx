@@ -30,7 +30,7 @@ const COMMON_TAGS: {
 const TAG_CONFLICTS = [
   ["g1", "g2", "g3", "g4", "g5", "g6", "jh", "hs"],
   ["joyo", "hyougai"],
-  ["N1", "N2", "N3", "N4", "N5"],
+  ["n1", "n2", "n3", "n4", "n5"],
 ];
 
 const isTagConflict = (tags: string[]) => {
@@ -47,7 +47,6 @@ export default function Home() {
   const getKanji = api.db.getKanji.useQuery({
     limit: 9999,
     page: 0,
-    nosort: true,
   });
   const updateKanji = api.db.updateKanjiMany.useMutation();
 

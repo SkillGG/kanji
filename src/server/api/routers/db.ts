@@ -32,6 +32,7 @@ import {
   and,
   arrayContains,
   count,
+  EmptyFilter,
   eq,
   exists,
   ilike,
@@ -42,7 +43,10 @@ import {
 } from "drizzle-orm";
 import { setKanjiTags, setWordReading, setWordTags } from "~/server/db/crud";
 
-const WordSearch = (str: string | undefined) => {
+const wT = word;
+const kT = kanji;
+
+const WordSearch = (str: string | undefined, word: typeof wT = wT) => {
   if (!str) return undefined;
   const pattern = `%${str.trim().replace(/([%_])/g, "\\$1")}%`;
   if (pattern === "%%") return undefined;
@@ -59,9 +63,7 @@ const WordSearch = (str: string | undefined) => {
         ),
     ), // { kanji: { some: { kanji: { contains: str } } } },
     ilike(word.word, pattern), // { word: { contains: str } },
-    exists(
-      sql`select 1 from unnest(${word.meaning}) as m where m ilike ${pattern}`,
-    ), // { meaning: { hasSome: [str] } },
+    sql`exists( select 1 from unnest(${word.meaning}) as m where m ilike ${pattern})`, // { meaning: { hasSome: [str] } },
 
     exists(
       qb
@@ -80,7 +82,7 @@ const WordSearch = (str: string | undefined) => {
   );
 };
 
-const KanjiSearch = (str: string | undefined) => {
+const KanjiSearch = (str: string | undefined, kanji: typeof kT = kT) => {
   if (!str) return undefined;
   const safeStr = str.trim().replace(/([%_])/g, "\\$1");
   if (!safeStr) return undefined;
@@ -88,13 +90,13 @@ const KanjiSearch = (str: string | undefined) => {
   return or(
     eq(kanji.kanji, safeStr),
     exists(
-      sql`select 1 from unnest(${kanji.kunyomi}) as k where k ilike ${pattern}`,
+      sql` select 1 from unnest(${kanji.kunyomi}) as k where k ilike ${pattern}`,
     ),
     exists(
-      sql`select 1 from unnest(${kanji.onyomi}) as o where o ilike ${pattern}`,
+      sql` select 1 from unnest(${kanji.onyomi}) as o where o ilike ${pattern}`,
     ),
     exists(
-      sql`select 1 from unnest(${kanji.meaning}) as m where m ilike ${pattern}`,
+      sql` select 1 from unnest(${kanji.meaning}) as m where m ilike ${pattern}`,
     ),
     exists(
       qb
@@ -147,11 +149,12 @@ export const dbRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input: { limit, page, search } }) => {
-      const filter = WordSearch(search);
       const offset = (page ?? 0) * (limit ?? WORDSPERPAGE) || undefined;
       return (
         await ctx.db.query.word.findMany({
-          where: filter ? { RAW: () => filter } : undefined,
+          where: search?.trim()
+            ? { RAW: (t) => WordSearch(search?.trim(), t) ?? sql`true` }
+            : EmptyFilter,
           with: { tag: true, reading: { columns: { reading: true } } },
           orderBy: { reading: { raw: "asc(min)" }, word: "asc" },
           limit,
@@ -170,9 +173,10 @@ export const dbRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input: { limit, page, search, nosort } }) => {
       const offset = (page ?? 0) * (limit ?? KANJIPERPAGE) || undefined;
-      const filter = KanjiSearch(search);
       return await ctx.db.query.kanji.findMany({
-        where: filter ? { RAW: () => filter } : undefined,
+        where: search?.trim()
+          ? { RAW: (t) => KanjiSearch(search?.trim(), t) ?? sql`true` }
+          : EmptyFilter,
         with: { tag: true },
         orderBy: !!nosort ? undefined : { kanji: "asc" },
         limit,
