@@ -184,10 +184,10 @@ export const sessionRouter = createTRPCRouter({
       const cards = await getCardsWithoutAnswers(ctx.db, exScope);
 
       return {
-        word_whole: cards.whole.length,
-        word_hole: cards.hole.length,
+        word_whole: cards.cards.filter((c) => c.type === "whole").length,
+        word_hole: cards.cards.filter((c) => (c.type = "hole")).length,
         sentence: 0,
-        all: cards.hole.length + cards.whole.length,
+        all: cards.cards.length,
       };
     }),
 });

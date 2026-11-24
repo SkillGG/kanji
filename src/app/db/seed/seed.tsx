@@ -16,12 +16,7 @@ import React, {
 } from "react";
 import { type Tag, type WordRecordData } from "~/app/_components/db/records";
 import { containsKanji, uniqueKanjiFromWordsWithTags } from "~/lib/seed";
-import {
-  extractTags,
-  getFullTagName,
-  TAG_FULLNAME_MAP_ENG,
-  WARN_TAGS,
-} from "~/lib/tags";
+import { extractTags, getFullTagName, WARN_TAGS } from "~/lib/tags";
 import { getFullWordRading, isTruthy, noop, pushIfNotIn } from "~/lib/utils";
 import type { DicEntry } from "~/server/api/routers/db";
 import { api } from "~/trpc/react";
@@ -29,6 +24,7 @@ import type { KanjiWithTag } from "../page";
 import { tagShortcutOKD, ArrayField } from "~/app/_components/db/addRecords";
 import { cn } from "cn";
 import { OkuriganaInputDialog } from "~/app/_components/okuriganaInput";
+import { Spinner } from "~/app/_components/spinnerOn";
 
 function WordText({ text }: { text: string }) {
   return (
@@ -81,25 +77,29 @@ function KanjiWordDisplay({
 }) {
   const mainTags = [...kEleInfo, ...addedTags];
   const body = useRef<HTMLDivElement>(null);
+
   return (
     <div
       className={cn("flex w-full min-w-0 flex-col gap-2")}
       data-word={word}
       onKeyDown={(e) => {
-        console.log(e.code, word);
         switch (e.code) {
           case "F1":
           case "F2":
           case "F3":
           case "F4":
           case "F5":
-            if (!e.ctrlKey) e.preventDefault();
-            const nLVL = "N" + e.code.replace(/F/i, "");
-            addTag?.(nLVL);
+            if (e.getModifierState("CapsLock")) {
+              e.preventDefault();
+              const nLVL = "N" + e.code.replace(/F/i, "");
+              addTag?.(nLVL);
+            }
             break;
           case "KeyA":
-            const tag = prompt("Tag to toggle");
-            if (tag) addTag?.(tag);
+            if (e.getModifierState("CapsLock")) {
+              const tag = prompt("Tag to toggle");
+              if (tag) addTag?.(tag);
+            }
             break;
         }
       }}
@@ -118,6 +118,8 @@ function KanjiWordDisplay({
               .flatMap((q) => extractTags(q))
               .map((tag) => {
                 const full = getFullTagName(tag);
+                const short = getFullTagName(tag, true);
+                const tg = tag.length < 10 ? tag : `${tag.substring(0, 7)}...`;
                 return (
                   <span
                     key={`${word}_${tag}`}
@@ -133,9 +135,9 @@ function KanjiWordDisplay({
                       toggleExistingTag?.(tag);
                       body?.current?.focus();
                     }}
-                    title={full !== tag ? full : undefined}
+                    title={full !== tg ? (full ?? tag) : undefined}
                   >
-                    {tag}
+                    {full.length < 10 ? full : short.length < 10 ? short : tg}
                   </span>
                 );
               })}
@@ -558,6 +560,9 @@ function KanjiMeaningInputDialog({
 
   const [allowForce, setAllowForce] = useState(false);
 
+  const { mutateAsync: getKanjiData, isPending: gettingKanjiData } =
+    api.db.getKanjiJishoData.useMutation();
+
   // Utilities
   const updateArrayField = (
     kanji: string,
@@ -705,8 +710,34 @@ function KanjiMeaningInputDialog({
               "border-blue-300 bg-blue-800 px-2 py-1 text-xs text-blue-100",
               "transition hover:bg-blue-700 active:scale-95",
             )}
+            onContextMenu={async (e) => {
+              e.preventDefault();
+
+              // load data from jisho
+
+              const kanjis = [...new Set(data.map((q) => q.kanji))];
+
+              const jshoData = await getKanjiData(kanjis);
+
+              console.log(jshoData);
+
+              setData((prev) =>
+                prev.map((q) => {
+                  const nD = jshoData.find((z) => z.kanji === q.kanji);
+                  return nD
+                    ? {
+                        kanji: q.kanji,
+                        kunyomi: nD.kunyomi,
+                        meaning: nD.meaning,
+                        onyomi: nD.onyomi,
+                        tags: nD.tags.map((t) => t.name),
+                      }
+                    : q;
+                }),
+              );
+            }}
           >
-            Jisho
+            {gettingKanjiData ? <Spinner /> : "Jisho"}
           </a>
         </div>
         <form
@@ -1046,7 +1077,7 @@ export default function Seed() {
   const existingWordList =
     getWordQ.data?.map((q) => ({
       word: q.word,
-      reading: q.reading,
+      reading: [...q.rawReading, ...q.reading],
     })) ?? [];
 
   async function handleSaveToDb(
@@ -1467,7 +1498,26 @@ export default function Seed() {
                 )}
               >
                 <div className="flex min-w-0 flex-row items-start gap-2 px-6 pt-5 pb-3">
-                  <div className="min-w-0 flex-1">
+                  <div
+                    className="min-w-0 flex-1"
+                    onMouseDown={(e) => {
+                      if (e.buttons & 0b100) {
+                        e.preventDefault();
+                        existingWordList.forEach((w) => {
+                          if (w.word === group.word)
+                            console.log(
+                              w.word,
+                              group.word === w.word,
+                              group.readings,
+                              w.reading,
+                              w.reading.map((r) =>
+                                getFullWordRading(w.word, r),
+                              ),
+                            );
+                        });
+                      }
+                    }}
+                  >
                     <KanjiWordDisplay
                       word={group.word}
                       readings={group.readings}
@@ -1475,7 +1525,11 @@ export default function Seed() {
                       rEleInfos={group.rEleInfos}
                       meanings={group.meanings}
                       addedTags={addedTags.find((q) => q.w === group.word)?.t}
-                      addTag={(tag) => {
+                      addTag={(_t) => {
+                        const t = _t.trim().toLowerCase();
+                        if (!t) return;
+                        const tag = `${t.trim().toLowerCase()}`;
+                        console.log("adding tag", tag);
                         if (addedTags.find((q) => q.w === group.word)) {
                           setAddedTags((prev) =>
                             prev.map((atw) => {

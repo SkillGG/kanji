@@ -1,58 +1,53 @@
-import { SessionScope } from "~/lib/sessionScope";
+import {
+  generateSeed,
+  isCorrectSeed,
+  Seed,
+  SessionScope,
+} from "~/lib/sessionScope";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import z from "zod";
-import { isInRange, isTagInInput } from "~/lib/utils";
-import type {
-  Card,
-  GameData,
-  HoleCard,
-  HoleQuestion,
-  NoAnswerCard,
-  WholeCard,
-  WholeQuestion,
-} from "~/lib/game";
+import type { CardSessionStats, GameData } from "~/lib/game";
 import {
-  findPossibleAnswersForHole,
-  findPossibleAnswersForWhole,
   getCardsWithoutAnswers,
   getParsedScope,
+  getRandomCards,
   getWordCards,
 } from "~/server/db/crud";
-import chalk from "chalk";
 
 export const gameRouter = createTRPCRouter({
-  getGameDataFromScope: publicProcedure
-    .input(z.object({ scope: SessionScope }))
-    .query(async ({ ctx, input: { scope } }) => {
+  consumeGameData: publicProcedure
+    .input(
+      z.object({
+        scope: SessionScope,
+        seed: z.string().optional(),
+        page: z.number().default(0),
+        getStats: z.boolean().default(false),
+      }),
+    )
+    .query(async ({ ctx, input: { scope, seed, page, getStats } }) => {
       const pScope = await getParsedScope(ctx.db, scope);
-      console.log(
-        scope,
-        chalk.red("Server got above scope scopes and parsed it"),
+      const curSeed: Seed = isCorrectSeed(seed) ? seed : generateSeed();
+
+      const { cards, hasNext, statistics } = await getRandomCards(
+        ctx.db,
         pScope,
+        curSeed,
+        page,
       );
-      const gD = await getCardsWithoutAnswers(ctx.db, pScope);
 
-      const [whole, hole /* sentences */] = await Promise.all([
-        Promise.all(
-          gD.whole.map(async (w): Promise<WholeCard> => ({
-            ...w,
-            possibleAnswers: await findPossibleAnswersForWhole(
-              ctx.db,
-              w.question,
-            ),
-          })),
-        ),
-        Promise.all(
-          gD.hole.map(async (w): Promise<HoleCard> => ({
-            ...w,
-            possibleAnswers: await findPossibleAnswersForHole(
-              ctx.db,
-              w.question,
-            ),
-          })),
-        ),
-      ] as const);
+      const stats: CardSessionStats = {
+        ...statistics,
+      };
+      if (getStats) {
+        const { cards } = await getCardsWithoutAnswers(ctx.db, pScope);
+        stats.allCardsInScope = cards.length;
+      }
 
-      return { whole, hole };
+      return {
+        cards,
+        seed: curSeed,
+        stats,
+        hasNext,
+      };
     }),
 });

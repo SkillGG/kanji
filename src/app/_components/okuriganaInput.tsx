@@ -347,6 +347,10 @@ export function OkuriganaInputDialog({
                           key={`reading_${curWord.word}_${curReading.join("")}_${ki}`}
                           onMouseDown={(e) => {
                             if (e.buttons & 0b01) moveCursorTo(ri, ki);
+                            if (e.buttons & 0b100) {
+                              e.preventDefault();
+                              removeOnCursor();
+                            }
                           }}
                           className={cn(
                             "border border-white px-2",

@@ -1,5 +1,10 @@
 import { cn } from "cn";
-import { Fragment, type DetailedHTMLProps, type HTMLAttributes } from "react";
+import {
+  Fragment,
+  type CSSProperties,
+  type DetailedHTMLProps,
+  type HTMLAttributes,
+} from "react";
 import { containsKanji } from "~/lib/seed";
 
 type ReadingData = { part: string; ruby: string }[];
@@ -40,10 +45,15 @@ export const JapaneseRuby = ({
   text,
   reading,
   ruby,
+  styleGenerator,
   ...rest
 }: {
   text: string;
   reading: string;
+  styleGenerator?: (
+    p: string,
+    r: string,
+  ) => undefined | { bottom?: CSSProperties; top?: CSSProperties };
   ruby?: DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement>;
 } & DetailedHTMLProps<HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>) => {
   const spReading = parseReadingData(text, reading);
@@ -51,31 +61,37 @@ export const JapaneseRuby = ({
   const newKey = typeof rest.key === "string" ? `${rest.key}_` : text;
   return (
     <span {...rest} data-jpruby="true">
-      {spReading.map(({ part, ruby: r }, i) => (
-        <ruby {...ruby} key={`${newKey}(${part}#${i})`}>
-          {part}
-          {r ? (
-            <Fragment key={`${newKey}(${part}#${i})_wr`}>
-              <rp>(</rp>
-              <rt
-                className={cn(
-                  `mb-1 text-xs text-slate-400`,
-                  // `rounded-t-md border-t-3 border-white/50`,
-                )}
-              >
-                {r}
-              </rt>
-              <rp>)</rp>
-            </Fragment>
-          ) : (
-            <Fragment key={`${newKey}(${part}#${i})_nr`}>
-              <rp>(</rp>
-              <rt className={cn(`text-xs text-slate-400`)}></rt>
-              <rp>)</rp>
-            </Fragment>
-          )}
-        </ruby>
-      ))}
+      {spReading.map(({ part, ruby: r }, i) => {
+        const css = styleGenerator?.(part, r);
+        return (
+          <ruby {...ruby} key={`${newKey}(${part}#${i})`}>
+            <span style={css?.bottom} key={`${newKey}(${part}#${i})_part`}>
+              {part}
+            </span>
+            {r ? (
+              <Fragment key={`${newKey}(${part}#${i})_wr`}>
+                <rp>(</rp>
+                <rt
+                  className={cn(
+                    `mb-1 text-xs text-slate-400`,
+                    // `rounded-t-md border-t-3 border-white/50`,
+                  )}
+                  style={css?.top}
+                >
+                  {r}
+                </rt>
+                <rp>)</rp>
+              </Fragment>
+            ) : (
+              <Fragment key={`${newKey}(${part}#${i})_nr`}>
+                <rp>(</rp>
+                <rt className={cn(`text-xs text-slate-400`)}></rt>
+                <rp>)</rp>
+              </Fragment>
+            )}
+          </ruby>
+        );
+      })}
     </span>
   );
 };

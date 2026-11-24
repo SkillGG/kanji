@@ -646,7 +646,7 @@ export const TAG_FULLNAME_MAP_ENG: Record<string, string> = {
   sl: "Slang",
   station: "Station name",
   surname: "Surname/Family name",
-  uk: "Usually written in katakana",
+  uk: "Usually written using kana",
   unclass: "Unclassified",
   vulg: "Vulgar",
   work: "Work title (literature/art/etc.)",

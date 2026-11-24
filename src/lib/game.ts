@@ -1,3 +1,5 @@
+export const HOLE_WILDCARD = "〇";
+
 export type TagType = "kanji" | "word" | "sentence";
 export type Tag = {
   name: string;
@@ -11,7 +13,7 @@ export type Tag = {
 };
 
 export type CardKanji = {
-  tags: string[];
+  tag: string[];
   kanji: string;
   onyomi: string[];
   kunyomi: string[];
@@ -24,35 +26,38 @@ export type CardWord = {
   meaning: string[];
   word: string;
   reading: string[];
-  tags: string[];
+  tag: string[];
 };
 
-export type Card<Q> = {
+export type Card<Q, T extends "hole" | "whole"> = {
   question: Q;
   possibleAnswers: string[];
+  type: T;
+  word: CardWord;
 };
 
 export type WholeQuestion = {
   meaning: string[];
   reading: string[];
 };
-export type WholeCard = Card<WholeQuestion> & { word: CardWord };
-
-export type NoAnswerCard<Q extends WholeCard | HoleCard> = Omit<
-  Q,
-  "possibleAnswers"
->;
+export type WholeCard = Card<WholeQuestion, "whole">;
 
 export type HoleQuestion = {
   holedWord: string;
   meaning: string[];
   reading: string[];
 };
-export type HoleCard = Card<HoleQuestion> & { word: CardWord };
+export type HoleCard = Card<HoleQuestion, "hole">;
+
+export type GameCard = WholeCard | HoleCard;
+
+export type NoAnswerCard<Q extends WholeCard | HoleCard> = Omit<
+  Q,
+  "possibleAnswers"
+>;
 
 export type GameData = {
-  whole: WholeCard[];
-  hole: HoleCard[];
+  cards: GameCard[];
 };
 
 export type Training = {
@@ -77,4 +82,12 @@ export const isTrainingRange = (o: unknown): o is TrainingRange => {
     isStringArray(o.kanji) &&
     isStringArray(o.word)
   );
+};
+
+export type CardSessionStats = {
+  requested: number;
+  words: number;
+  wordsLeft: number;
+  allCardsInScope?: number;
+  cardsFinished?: number;
 };

@@ -1,36 +1,47 @@
 "use client";
 
 import { cn } from "cn";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { tagShortcutOKD } from "~/app/_components/db/addRecords";
 import { extractTags } from "~/lib/tags";
-import { toggleMultiple } from "~/lib/utils";
+import { isTruthy, toggleMultiple } from "~/lib/utils";
 import { api } from "~/trpc/react";
 
 const COMMON_TAGS: {
-  name: string;
+  name: ReactNode;
   tag: string;
 }[] = [
+  {
+    name: <span className={cn(`text-orange-800`)}>Ｎ外</span>,
+    tag: "(n0)",
+  },
   { name: "N1", tag: "(n1)" },
   { name: "N2", tag: "(n2)" },
   { name: "N3", tag: "(n3)" },
   { name: "N4", tag: "(n4)" },
   { name: "N5", tag: "(n5)" },
-  { name: "g1", tag: "(g1)" },
-  { name: "g2", tag: "(g2)" },
-  { name: "g3", tag: "(g3)" },
-  { name: "g4", tag: "(g4)" },
-  { name: "g5", tag: "(g5)" },
-  { name: "g6", tag: "(g6)" },
-  { name: "jh", tag: "(jh)" },
-  { name: "hs", tag: "(hs)" },
-  { name: "joyo", tag: "(joyo)" },
+  { name: "1 year", tag: "(g1)" },
+  { name: "2 year", tag: "(g2)" },
+  { name: "3 year", tag: "(g3)" },
+  { name: "4 year", tag: "(g4)" },
+  { name: "5 year", tag: "(g5)" },
+  { name: "6 year", tag: "(g6)" },
+  { name: "Gim", tag: "(jh)" },
+  { name: "Lic", tag: "(hs)" },
+  { name: "常用", tag: "(joyo)" },
+  {
+    name: <span className={cn(`text-orange-800`)}>表外</span>,
+    tag: "(hyougai)",
+  },
 ];
 
 const TAG_CONFLICTS = [
-  ["g1", "g2", "g3", "g4", "g5", "g6", "jh", "hs"],
+  // the "--" means it will not be takes under consideration in "isTagDeficit". Meaning this tag group is not required
+  ["g1", "g2", "g3", "g4", "g5", "g6", "jh", "hs", "--"],
   ["joyo", "hyougai"],
-  ["n1", "n2", "n3", "n4", "n5"],
+  ["n0", "n1", "n2", "n3", "n4", "n5"],
+  ["kk1", "kk2", "kk3", "kk4", "kk5", "kk6", "kk7", "kk8", "kk9", "kk10"],
+  ["jis1", "jis2", "jis3", "jis4", "jis5", "jis6"],
 ];
 
 const isTagConflict = (tags: string[]) => {
@@ -41,6 +52,16 @@ const isTagConflict = (tags: string[]) => {
     if (conflicts.length > 1) return conflicts;
   }
   return false;
+};
+
+const isTagDeficit = (tags: string[]) => {
+  const deficits = TAG_CONFLICTS.filter((ta, i) => {
+    if (ta.includes("--")) return false;
+    return ta.every((t) => !tags.includes(`(${t})`));
+  });
+  return deficits.length > 0
+    ? deficits.map((q) => q[0]).filter(isTruthy)
+    : false;
 };
 
 export default function Home() {
@@ -59,15 +80,21 @@ export default function Home() {
   const [newtag, setNewtag] = useState<Record<string, string>>({});
   useEffect(() => {
     if (!kanji) return;
-    const sorted = kanji.toSorted((a, b) => {
-      return a.tag.length > 0 && b.tag.length > 0
-        ? 0
-        : a.tag.length === 0 && b.tag.length === 0
+    const sorted = kanji
+      .toSorted(
+        (a, b) =>
+          +!!isTagDeficit(a.tag.map((q) => q.name)) -
+          +!!isTagDeficit(b.tag.map((q) => q.name)),
+      )
+      .toSorted((a, b) => {
+        return a.tag.length > 0 && b.tag.length > 0
           ? 0
-          : a.tag.length === 0 && b.tag.length > 0
-            ? 1
-            : -1;
-    });
+          : a.tag.length === 0 && b.tag.length === 0
+            ? 0
+            : a.tag.length === 0 && b.tag.length > 0
+              ? 1
+              : -1;
+      });
     setKanjiTags(
       sorted.map((q) => ({ kanji: q.kanji, tag: q.tag.map((z) => z.name) })),
     );
@@ -173,6 +200,7 @@ export default function Home() {
       <div className="mx-2 grid grid-cols-2 gap-2">
         {kanjiTags.map(({ kanji, tag }) => {
           const tagConflict = isTagConflict(tag);
+          const tagDeficit = isTagDeficit(tag);
           return (
             <div
               key={kanji}
@@ -204,6 +232,17 @@ export default function Home() {
                   className="flex items-center gap-1 text-sm"
                   onClick={(e) => e.stopPropagation()}
                 >
+                  {tagDeficit &&
+                    tagDeficit.map((t) => (
+                      <span
+                        key={`${kanji}_def_${t}`}
+                        className={cn(
+                          `rounded-xl bg-orange-500/10 px-2 text-orange-500/50`,
+                        )}
+                      >
+                        {COMMON_TAGS.find((x) => x.tag === `(${t})`)?.name || t}
+                      </span>
+                    ))}
                   {tag.map((ut) => (
                     <span
                       key={`${kanji}_unc_${ut}`}

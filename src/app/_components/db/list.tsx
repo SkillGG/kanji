@@ -140,7 +140,7 @@ export const DBList = () => {
             </span>
             <button
               className="cursor-pointer rounded border border-slate-600 bg-slate-800 px-3 py-1 font-bold text-white hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
-              disabled={wpage >= Math.ceil(wordCount / WORDSPERPAGE)}
+              disabled={wpage + 1 >= Math.ceil(wordCount / WORDSPERPAGE)}
               onClick={() => setWpage((p) => p + 1)}
               title="Next page"
             >
@@ -210,7 +210,7 @@ export const DBList = () => {
             </span>
             <button
               className="cursor-pointer rounded border border-slate-600 bg-slate-800 px-3 py-1 font-bold text-white hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
-              disabled={kpage >= Math.floor(kanjiCount / KANJIPERPAGE)}
+              disabled={kpage + 1 >= Math.ceil(kanjiCount / KANJIPERPAGE)}
 
               onClick={() => setKpage((p) => ++p)}
               title="Next page"

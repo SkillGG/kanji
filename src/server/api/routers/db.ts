@@ -18,6 +18,7 @@ import {
   getFullWordRading,
   hasDefinedProp,
   isTruthy,
+  type Solid,
 } from "~/lib/utils";
 import {
   kanji,
@@ -42,6 +43,8 @@ import {
   sql,
 } from "drizzle-orm";
 import { setKanjiTags, setWordReading, setWordTags } from "~/server/db/crud";
+import { getChunkedKanjiData } from "./external";
+import type { KanjiRecordData } from "~/app/_components/db/records";
 
 const wT = word;
 const kT = kanji;
@@ -155,12 +158,19 @@ export const dbRouter = createTRPCRouter({
           where: search?.trim()
             ? { RAW: (t) => WordSearch(search?.trim(), t) ?? sql`true` }
             : EmptyFilter,
-          with: { tag: true, reading: { columns: { reading: true } } },
+          with: {
+            tag: true,
+            reading: { columns: { reading: true, raw: true } },
+          },
           orderBy: { reading: { raw: "asc(min)" }, word: "asc" },
           limit,
           offset,
         })
-      ).map((w) => ({ ...w, reading: w.reading.map((r) => r.reading) }));
+      ).map((w) => ({
+        ...w,
+        reading: w.reading.map((r) => r.reading),
+        rawReading: w.reading.map((r) => r.raw),
+      }));
     }),
   getKanji: publicProcedure
     .input(
@@ -517,5 +527,21 @@ export const dbRouter = createTRPCRouter({
     .input(z.object({ slice: z.tuple([z.number(), z.number()]) }))
     .query(({ input: { slice } }) => {
       return getSortedSeedData().slice(...slice);
+    }),
+
+  getKanjiJishoData: publicProcedure
+    .input(z.array(z.string()))
+    .mutation(async ({ input: kanjiToCheck }) => {
+      const ktc = [...new Set(kanjiToCheck)];
+      const data: Solid<KanjiRecordData>[] = [];
+      const CHUNKSIZE = 10;
+      let chunkNum = 0;
+
+      while (chunkNum * CHUNKSIZE < ktc.length) {
+        data.push(...(await getChunkedKanjiData(ktc, chunkNum, CHUNKSIZE)));
+        chunkNum++;
+      }
+
+      return data;
     }),
 });

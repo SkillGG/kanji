@@ -57,6 +57,28 @@ export const randomBase64 = (l: number): string => {
     .join("");
 };
 
+export function hashSortKey(input: string): string {
+  let h = 0x811c9dc5; // any non-zero value will do
+  for (let i = 0; i < input.length; i++) {
+    h ^= input.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return (h >>> 0).toString(16).padStart(8, "0");
+}
+
+export function randomizeArray<T>(
+  arr: T[],
+  getKey: (o: T, i: number, a: T[]) => string,
+  seed?: string,
+) {
+  // calculate hashes
+  const hashes = arr.map(
+    (v, i, a) => [hashSortKey(seed + ":" + getKey(v, i, a)), v] as const,
+  );
+  // sort and then map back
+  return hashes.toSorted((a, b) => a[0].localeCompare(b[0])).map((r) => r[1]);
+}
+
 export const parseServerSearchParams = async ({
   searchParams,
 }: {
@@ -136,4 +158,24 @@ export const dedupe = <T>(
 
 export type ServerError = {
   message: string;
+};
+
+export type Solid<T extends object> = Required<{
+  [P in keyof T]: NonNullable<T[P]>;
+}>;
+
+export const setTimeoutAsync = <T>(fn: () => T, delay: number): Promise<T> => {
+  return new Promise((r) => {
+    setTimeout(() => {
+      r(fn());
+    }, delay);
+  });
+};
+
+const logged: string[] = [];
+export const logOnce = (tag: string, ...log: any) => {
+  if (!logged.includes(tag)) {
+    logged.push(tag);
+    console.log(`[${tag}]: `, ...log);
+  }
 };
