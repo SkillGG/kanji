@@ -5,6 +5,10 @@ export type UnpackSet<T> = T extends Set<infer Q> ? Q : never;
 
 export const noop = <T>(...n: T[]): void => {};
 
+export const escapeRegexPattern = (s: string) => {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+};
+
 export const toggleMultiple = <T>(
   a: T[],
   b: T[],

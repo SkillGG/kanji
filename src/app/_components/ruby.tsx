@@ -5,7 +5,7 @@ import {
   type DetailedHTMLProps,
   type HTMLAttributes,
 } from "react";
-import { containsKanji } from "~/lib/seed";
+import { containsKanji } from "~/lib/jp";
 
 type ReadingData = { part: string; ruby: string }[];
 

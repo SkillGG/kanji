@@ -15,7 +15,7 @@ import React, {
   type SubmitEventHandler,
 } from "react";
 import { type Tag, type WordRecordData } from "~/app/_components/db/records";
-import { containsKanji, uniqueKanjiFromWordsWithTags } from "~/lib/seed";
+import { containsKanji, uniqueKanjiFromWordsWithTags } from "~/lib/jp";
 import { extractTags, getFullTagName, WARN_TAGS } from "~/lib/tags";
 import { getFullWordRading, isTruthy, noop, pushIfNotIn } from "~/lib/utils";
 import type { DicEntry } from "~/server/api/routers/db";
@@ -25,6 +25,7 @@ import { tagShortcutOKD, ArrayField } from "~/app/_components/db/addRecords";
 import { cn } from "cn";
 import { OkuriganaInputDialog } from "~/app/_components/okuriganaInput";
 import { Spinner } from "~/app/_components/spinnerOn";
+import { useDebounce, useDebounceT } from "~/lib/hooks";
 
 function WordText({ text }: { text: string }) {
   return (
@@ -107,7 +108,12 @@ function KanjiWordDisplay({
       tabIndex={0}
       title={`#${nth}`}
     >
-      <div className="flex min-w-0 flex-row items-center gap-3">
+      <div
+        className={cn(
+          "flex min-w-0 flex-row items-center gap-3",
+          word.length > 6 && "flex-wrap items-start gap-0",
+        )}
+      >
         <span className="text-2xl font-extrabold tracking-tight text-nowrap text-slate-50">
           <WordText text={word} />
         </span>
@@ -996,19 +1002,32 @@ export default function Seed() {
 
   const pageSize = 300;
   const initialPage = Number(searchParams.get("page")) || 0;
-  const [page, setPageState] = useState(initialPage);
 
-  const setPage: Dispatch<SetStateAction<number>> = (p) => {
-    const pageNum = typeof p === "function" ? p(page) : p;
-    setPageState(p);
+  const [_page, setPageState] = useState(initialPage);
+  const { value: page } = useDebounce(_page, { delay: 1 });
+  const [_search, setSearch] = useState(searchParams.get("s") || "");
+
+  console.log(searchParams.get("page"), initialPage, _page, page);
+  const { value: search } = useDebounce(_search, {
+    delay: 1000,
+  });
+
+  useEffect(() => {
+    const pageNum = page;
     const params = new URLSearchParams(searchParams ?? undefined);
     if (pageNum === 0) {
       params.delete("page");
     } else {
       params.set("page", pageNum.toString());
     }
+    const sr = search.trim();
+    if (!!sr) {
+      params.set("s", sr);
+    } else {
+      params.delete("s");
+    }
     router.replace(`?${params.toString()}`);
-  };
+  }, [page, search]);
 
   const [showOkuriganaDialog, setShowOkuriganaDialog] = useState(false);
   const [okuriganaChecked, setOkuriganaChecked] = useState<string[]>([]);
@@ -1026,6 +1045,7 @@ export default function Seed() {
 
   const seedData = api.db.getSeedData.useQuery({
     slice: [page * pageSize, (page + 1) * pageSize],
+    search,
   });
   const getKanjiQ = api.db.getKanji.useQuery(
     { limit: Number.MAX_SAFE_INTEGER },
@@ -1047,8 +1067,8 @@ export default function Seed() {
   const seedDB = api.db.seed.useMutation();
   const dbUtils = api.useUtils();
 
-  const flatRecords: FlatRecord[] = Array.isArray(seedData.data)
-    ? seedData.data.flatMap(flattenDicEntry)
+  const flatRecords: FlatRecord[] = Array.isArray(seedData.data?.seedData)
+    ? seedData.data.seedData.flatMap(flattenDicEntry)
     : [];
   const groupedRecords = groupKanjiFlatRecords(
     flatRecords,
@@ -1169,64 +1189,26 @@ export default function Seed() {
 
   // #endregion logic
 
-  if (seedData.isLoading || getKanjiQ.isLoading || getWordQ.isLoading) {
-    return (
-      <div className="h-screen w-full bg-slate-900 bg-linear-to-br to-slate-950">
-        {showSavedPopup && (
-          <div
-            key="savedpopup"
-            className={cn(
-              "animate-fade-in-out fixed top-6 left-1/2 z-50 -translate-x-1/2",
-              "rounded-lg border-2 border-emerald-400 bg-emerald-700 px-6 py-3",
-              "text-white shadow-lg transition-opacity",
-            )}
-          >
-            保存しました
-          </div>
-        )}
-        <div className="flex h-screen w-full items-center justify-center">
-          <svg
-            className="h-12 w-12 animate-spin text-blue-200"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth={4}
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-            />
-          </svg>
-          <span className="ml-4 text-xl font-bold tracking-wide text-blue-100">
-            Loading...
-          </span>
-        </div>
-      </div>
-    );
-  }
+  const renderList =
+    !seedData.isLoading && !getKanjiQ.isLoading && !getWordQ.isLoading;
 
   return (
     <div
-      className="flex w-full flex-row flex-wrap justify-around gap-4 bg-slate-900 bg-linear-to-br to-slate-950 p-4 select-none"
-      style={{ userSelect: "none" }}
+      className={cn(
+        "grid h-screen max-h-screen w-full grid-rows-[min-content_1fr] justify-around gap-5 overflow-x-hidden",
+        "overflow-y-scroll bg-slate-900 bg-linear-to-br to-slate-950 p-4 select-none",
+        !renderList && "overflow-y-hidden",
+      )}
     >
       <nav
-        className="sticky top-4 left-0 z-30 flex flex-row items-center gap-4 rounded-2xl border border-slate-800 bg-slate-900/95 px-8 py-3 shadow-lg shadow-blue-900/40 backdrop-blur-sm"
-        style={{ minWidth: 350, marginBottom: "1.3rem" }}
+        className="sticky top-0 left-0 z-30 flex flex-row items-center gap-4 justify-self-center rounded-2xl border border-slate-800 bg-slate-900/95 px-8 py-3"
+        style={{ minWidth: 350 }}
       >
         <Link
           className={cn(
-            "ml-2 rounded-lg border-2 border-blue-900 bg-linear-to-r from-blue-950 to-blue-700",
-            "px-4 py-2 font-semibold text-blue-100 shadow-md transition-all hover:from-blue-800",
-            "cursor-pointer hover:to-blue-900 active:scale-95",
+            "ml-2 rounded-lg border-2 border-blue-900 bg-blue-500/50",
+            "px-4 py-2 font-semibold text-blue-100 shadow-md transition-all hover:bg-blue-800",
+            "cursor-pointer active:scale-95",
           )}
           href={"/db"}
           title="Go to DB page"
@@ -1234,8 +1216,8 @@ export default function Seed() {
           <span className="tracking-wider">DB</span>
         </Link>
         <button
-          onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
-          disabled={page === 0}
+          onClick={() => setPageState((prev) => Math.max(prev - 1, 0))}
+          disabled={_page === 0}
           className={cn(
             "mx-1 rounded-full border border-slate-600 bg-blue-950 px-4 py-2 text-xl font-bold text-white",
             "shadow-sm transition hover:bg-blue-900 hover:shadow-md active:scale-95 disabled:cursor-not-allowed",
@@ -1247,12 +1229,29 @@ export default function Seed() {
         >
           &lt;
         </button>
-        <span className="min-w-6 px-2 text-center text-lg font-bold text-blue-200 drop-shadow-sm">
-          {page}/{maxPage}
+        <span className="flex min-w-6 px-2 text-center text-lg font-bold text-blue-200 drop-shadow-sm">
+          {_page + 1} /{" "}
+          {!renderList ? (
+            <Spinner
+              className="inline-block"
+              spinnerStyle={{ className: "w-8 h-8" }}
+            />
+          ) : (
+            Math.floor((seedData.data?.len ?? 0) / pageSize) + 1
+          )}
         </span>
         <button
-          onClick={() => setPage((prev) => Math.min(prev + 1, maxPage))}
-          disabled={page >= maxPage}
+          onClick={() =>
+            setPageState((prev) =>
+              Math.min(
+                prev + 1,
+                Math.floor((seedData.data?.len ?? 0) / pageSize) + 1,
+              ),
+            )
+          }
+          disabled={
+            _page + 1 >= Math.floor((seedData.data?.len ?? 0) / pageSize) + 1
+          }
           className={cn(
             "mx-1 rounded-full border border-slate-600 bg-blue-950 px-4 py-2 text-xl font-bold text-white",
             "shadow-sm transition hover:bg-blue-900 hover:shadow-md active:scale-95 disabled:cursor-not-allowed",
@@ -1278,16 +1277,15 @@ export default function Seed() {
         )}
         <button
           className={cn(
-            "ml-2 rounded-lg border-2 border-green-800 bg-linear-to-br from-emerald-950 via-emerald-900",
-            "to-emerald-800 px-4 py-2 font-semibold text-emerald-100 shadow-md transition-all hover:from-emerald-800",
-            "hover:to-emerald-500 hover:shadow-lg active:scale-95",
+            "ml-2 rounded-lg border-2 border-green-800 bg-emerald-700/50",
+            "px-4 py-2 font-semibold text-emerald-100 shadow-md transition-all hover:bg-emerald-800",
+            "active:scale-95",
             "cursor-pointer",
-            missingKanji.length > 0 &&
-              "border-lime-500 to-lime-400 hover:from-lime-400",
+            missingKanji.length > 0 && "border-lime-500",
             "disabled:pointer-events-none disabled:cursor-not-allowed disabled:border-slate-400",
             "disabled:bg-slate-700 disabled:text-slate-300 disabled:opacity-60",
           )}
-          disabled={selectedRecords.length === 0}
+          disabled={!renderList || selectedRecords.length === 0}
           type="button"
           onClick={async () => {
             if (selected.some((t) => !okuriganaChecked.includes(t))) {
@@ -1300,347 +1298,279 @@ export default function Seed() {
             }
           }}
         >
-          {seedDB.isPending ||
-          getKanjiQ.isPending ||
-          getWordQ.isPending ||
-          seedData.isPending ? (
-            <svg
-              className="mx-auto h-5 w-5 animate-spin text-emerald-100"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              ></circle>
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-              ></path>
-            </svg>
-          ) : (
-            "保存"
-          )}
+          保存
         </button>
-        <button
+        <input
           className={cn(
-            "ml-2 rounded-lg border-2 border-purple-900 bg-linear-to-r",
-            "from-purple-950 to-purple-700 px-3 py-2 font-semibold",
-            "text-purple-200 shadow-md transition-all hover:from-purple-700",
-            "text-base hover:to-purple-800 active:scale-95 sm:px-4",
-            "cursor-pointer sm:py-2 sm:text-lg",
+            `w-48 min-w-8 rounded-xl border border-slate-800 px-2 py-2 text-white`,
+            "disabled:border-gray-500 disabled:bg-gray-700/50",
           )}
-
-          onClick={() => {
-            if (!flatRecords.length) return;
-            const allSelectable = flatRecords
-              .filter((fr) => fr.canSelect)
-              .map((fr) => fr.ent_seq);
-
-            const allSelected =
-              allSelectable.length > 0 &&
-              allSelectable.every((seq) => selected.includes(seq));
-
-            if (allSelectable.length === 0) return;
-
-            if (allSelected) {
-              setSelected((prev) =>
-                prev.filter((seq) => !allSelectable.includes(seq)),
-              );
-            } else if (selected.some((seq) => allSelectable.includes(seq))) {
-              setSelected((prev) => {
-                const newSelected = new Set(prev);
-                allSelectable.forEach((seq) => {
-                  if (newSelected.has(seq)) {
-                    newSelected.delete(seq);
-                  } else {
-                    newSelected.add(seq);
-                  }
-                });
-                return Array.from(newSelected);
-              });
-            } else {
-              setSelected((prev) =>
-                Array.from(new Set([...prev, ...allSelectable])),
-              );
-            }
+          placeholder={"/(ど|こ|そ|あそ)こ/gi"}
+          value={_search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            if (e.target.value) setPageState(0);
           }}
-          title="Select/deselect/toggle all selectable entries on this page"
-          type="button"
-        >
-          <span className="tracking-wider">全部</span>
-        </button>
-        <button
-          className={cn(
-            "ml-2 rounded-lg border-2 border-yellow-900 bg-linear-to-r from-yellow-950 to-yellow-700",
-            "px-4 py-2 font-semibold text-yellow-100 shadow-md transition-all hover:from-yellow-800",
-            "cursor-pointer hover:to-yellow-900 active:scale-95",
-          )}
-          onClick={() => {
-            const kanjiSelectable = flatRecords
-              .filter(
-                (fr) =>
-                  fr.canSelect &&
-                  containsKanji(
-                    (fr.word ?? "").replace(/\s*\([^)]+\)\s*/g, ""),
-                  ),
-              )
-              .map((fr) => fr.ent_seq);
-            if (kanjiSelectable.length === 0) return;
-            setSelected((prev) =>
-              Array.from(new Set([...prev, ...kanjiSelectable])),
-            );
-          }}
-          title="Select all selectable entries on this page whose word contains kanji"
-          type="button"
-        >
-          <span className="tracking-wider">漢字</span>
-        </button>
+          disabled={!renderList}
+        />
       </nav>
+      {renderList ? (
+        <>
+          <KanjiMeaningInputDialog
+            open={showKanjiDialog}
+            kanjis={newKanjiList}
+            onClose={() => setShowKanjiDialog(false)}
+            onSubmit={(kanjiInput, forced) => {
+              setShowKanjiDialog(false);
+              handleSaveToDb(kanjiInput, forced);
+            }}
+          />
 
-      <KanjiMeaningInputDialog
-        open={showKanjiDialog}
-        kanjis={newKanjiList}
-        onClose={() => setShowKanjiDialog(false)}
-        onSubmit={(kanjiInput, forced) => {
-          setShowKanjiDialog(false);
-          handleSaveToDb(kanjiInput, forced);
-        }}
-      />
-
-      <OkuriganaInputDialog
-        onFinish={(early) => {
-          setTimeout(() => setShowOkuriganaDialog(false), 0);
-          if (!early) {
-            if (missingKanji.length > 0) {
-              setNewKanjiList(missingKanji);
-              setShowKanjiDialog(true);
-            } else {
-              handleSaveToDb([]);
-            }
-          }
-        }}
-        canClose
-        updateReading={(ent_seq, reading) => {
-          setReadingUpdates((prev) => {
-            const nP = [...prev];
-            return prev.find((q) => q.ent_seq === ent_seq)
-              ? prev.map((q) =>
-                  q.ent_seq === ent_seq ? { ent_seq, reading } : q,
-                )
-              : [...prev, { ent_seq, reading }];
-          });
-          setOkuriganaChecked((p) => [...new Set([...p, ent_seq])]);
-        }}
-        words={selectedRecords
-          .filter((w) => !okuriganaChecked.includes(w.ent_seq))
-          .map((w) => ({ reading: w.reading, word: w.word, id: w.ent_seq }))}
-        open={showOkuriganaDialog}
-      />
-
-      <div className="grid w-full grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {groupedRecords.map((group, i) => {
-          const normalizeIterationMark = (str: string) => {
-            return str.replace(/([\p{sc=Han}])々/gu, "$1$1");
-          };
-          const thisNormWord = normalizeIterationMark(group.word ?? "");
-          const shouldSkip = groupedRecords.some(
-            (other) =>
-              other !== group &&
-              normalizeIterationMark(other.word ?? "") === thisNormWord,
-          );
-          if (shouldSkip) return null;
-          if ("readings" in group) {
-            const selectedEntSeqs = group.ent_seq_arr.filter((entSeq) =>
-              selected.includes(entSeq),
-            );
-
-            const handleClickReading = (
-              reading: string,
-              readingIdx: number,
-            ) => {
-              const entSeq = group.ent_seq_arr[readingIdx];
-              if (typeof entSeq !== "string") return;
-              const isSelected = selected.includes(entSeq);
-
-              setSelected((prev) => {
-                if (isSelected) {
-                  return prev.filter((x) => x !== entSeq);
+          <OkuriganaInputDialog
+            onFinish={(early) => {
+              setTimeout(() => setShowOkuriganaDialog(false), 0);
+              if (!early) {
+                if (missingKanji.length > 0) {
+                  setNewKanjiList(missingKanji);
+                  setShowKanjiDialog(true);
                 } else {
-                  return [...prev, entSeq];
+                  handleSaveToDb([]);
                 }
+              }
+            }}
+            canClose
+            updateReading={(ent_seq, reading) => {
+              setReadingUpdates((prev) => {
+                const nP = [...prev];
+                return prev.find((q) => q.ent_seq === ent_seq)
+                  ? prev.map((q) =>
+                      q.ent_seq === ent_seq ? { ent_seq, reading } : q,
+                    )
+                  : [...prev, { ent_seq, reading }];
               });
-            };
-            return (
-              <div
-                key={group.id}
-                data-groupid={group.id}
-                data-can-select={group.canSelect ? "true" : "false"}
-                className={cn(
-                  "relative flex min-h-8 flex-1 flex-col items-stretch rounded-2xl border bg-linear-to-br from-slate-950 to-slate-900 transition duration-150",
-                  selectedEntSeqs.length > 0
-                    ? "border-yellow-400 bg-linear-to-br from-yellow-950 via-yellow-900 to-yellow-900 ring-2 ring-yellow-800"
-                    : "",
-                  existingWordList.find((w) => {
-                    return (
-                      w.word === group.word &&
-                      !!group.readings.find((r) => w.reading.includes(r))
-                    );
-                  })
-                    ? "border-green-400 bg-linear-to-br from-green-950 via-green-950 to-green-900 ring-2 ring-green-800"
-                    : "border-slate-800 hover:shadow-lg",
-                )}
-              >
-                <div className="flex min-w-0 flex-row items-start gap-2 px-6 pt-5 pb-3">
+              setOkuriganaChecked((p) => [...new Set([...p, ent_seq])]);
+            }}
+            words={selectedRecords
+              .filter((w) => !okuriganaChecked.includes(w.ent_seq))
+              .map((w) => ({
+                reading: w.reading,
+                word: w.word,
+                id: w.ent_seq,
+              }))}
+            open={showOkuriganaDialog}
+          />
+
+          <div className="grid w-full grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {groupedRecords.map((group, i) => {
+              const normalizeIterationMark = (str: string) => {
+                return str.replace(/([\p{sc=Han}])々/gu, "$1$1");
+              };
+              const thisNormWord = normalizeIterationMark(group.word ?? "");
+              const shouldSkip = groupedRecords.some(
+                (other) =>
+                  other !== group &&
+                  normalizeIterationMark(other.word ?? "") === thisNormWord,
+              );
+              if (shouldSkip) return null;
+              if ("readings" in group) {
+                const selectedEntSeqs = group.ent_seq_arr.filter((entSeq) =>
+                  selected.includes(entSeq),
+                );
+
+                const handleClickReading = (
+                  reading: string,
+                  readingIdx: number,
+                ) => {
+                  const entSeq = group.ent_seq_arr[readingIdx];
+                  if (typeof entSeq !== "string") return;
+                  const isSelected = selected.includes(entSeq);
+
+                  setSelected((prev) => {
+                    if (isSelected) {
+                      return prev.filter((x) => x !== entSeq);
+                    } else {
+                      return [...prev, entSeq];
+                    }
+                  });
+                };
+                return (
                   <div
-                    className="min-w-0 flex-1"
-                    onMouseDown={(e) => {
-                      if (e.buttons & 0b100) {
-                        e.preventDefault();
-                        existingWordList.forEach((w) => {
-                          if (w.word === group.word)
-                            console.log(
-                              w.word,
-                              group.word === w.word,
-                              group.readings,
-                              w.reading,
-                              w.reading.map((r) =>
-                                getFullWordRading(w.word, r),
-                              ),
-                            );
-                        });
-                      }
-                    }}
-                  >
-                    <KanjiWordDisplay
-                      word={group.word}
-                      readings={group.readings}
-                      kEleInfo={group.kEleInfo}
-                      rEleInfos={group.rEleInfos}
-                      meanings={group.meanings}
-                      addedTags={addedTags.find((q) => q.w === group.word)?.t}
-                      addTag={(_t) => {
-                        const t = _t.trim().toLowerCase();
-                        if (!t) return;
-                        const tag = `${t.trim().toLowerCase()}`;
-                        console.log("adding tag", tag);
-                        if (addedTags.find((q) => q.w === group.word)) {
-                          setAddedTags((prev) =>
-                            prev.map((atw) => {
-                              return atw.w === group.word
-                                ? {
-                                    ...atw,
-                                    t: atw.t.includes(tag)
-                                      ? atw.t.filter((z) => z !== tag)
-                                      : [...atw.t, tag],
-                                  }
-                                : atw;
-                            }),
-                          );
-                        } else {
-                          setAddedTags((prev) => [
-                            ...prev,
-                            { w: group.word, t: [tag] },
-                          ]);
-                        }
-                      }}
-                      removedTags={
-                        removedTags.find((q) => q.w === group.word)?.t
-                      }
-                      toggleExistingTag={(tag) => {
-                        if (removedTags.find((q) => q.w === group.word)) {
-                          setRemovedTags((prev) =>
-                            prev.map((rtw) => {
-                              return rtw.w === group.word
-                                ? {
-                                    ...rtw,
-                                    t: rtw.t.includes(tag)
-                                      ? rtw.t.filter((z) => z !== tag)
-                                      : [...rtw.t, tag],
-                                  }
-                                : rtw;
-                            }),
-                          );
-                        } else {
-                          setRemovedTags((p) => [
-                            ...p,
-                            { w: group.word, t: [tag] },
-                          ]);
-                        }
-                      }}
-                      inDB={existingWordList.filter((w) => {
+                    key={group.id}
+                    data-groupid={group.id}
+                    data-can-select={group.canSelect ? "true" : "false"}
+                    className={cn(
+                      "relative flex min-h-8 flex-1 flex-col items-stretch rounded-2xl border bg-linear-to-br from-slate-950 to-slate-900 transition duration-150",
+                      selectedEntSeqs.length > 0
+                        ? "border-yellow-400 bg-linear-to-br from-yellow-950 via-yellow-900 to-yellow-900 ring-2 ring-yellow-800"
+                        : "",
+                      existingWordList.find((w) => {
                         return (
                           w.word === group.word &&
                           !!group.readings.find((r) => w.reading.includes(r))
                         );
-                      })}
-                      nth={i}
-                      canSelect={group.canSelect}
-                      selectedEntSeqs={selected}
-                      entSeqArr={group.ent_seq_arr}
-                      onClickReading={
-                        group.canSelect ? handleClickReading : undefined
-                      }
-                    />
+                      })
+                        ? "border-green-400 bg-linear-to-br from-green-950 via-green-950 to-green-900 ring-2 ring-green-800"
+                        : "border-slate-800 hover:shadow-lg",
+                    )}
+                  >
+                    <div className="flex min-w-0 flex-row items-start gap-2 px-6 pt-5 pb-3">
+                      <div
+                        className="min-w-0 flex-1"
+                        onMouseDown={(e) => {
+                          if (e.buttons & 0b100) {
+                            e.preventDefault();
+                            existingWordList.forEach((w) => {
+                              if (w.word === group.word)
+                                console.log(
+                                  w.word,
+                                  group.word === w.word,
+                                  group.readings,
+                                  w.reading,
+                                  w.reading.map((r) =>
+                                    getFullWordRading(w.word, r),
+                                  ),
+                                );
+                            });
+                          }
+                        }}
+                      >
+                        <KanjiWordDisplay
+                          word={group.word}
+                          readings={group.readings}
+                          kEleInfo={group.kEleInfo}
+                          rEleInfos={group.rEleInfos}
+                          meanings={group.meanings}
+                          addedTags={
+                            addedTags.find((q) => q.w === group.word)?.t
+                          }
+                          addTag={(_t) => {
+                            const t = _t.trim().toLowerCase();
+                            if (!t) return;
+                            const tag = `${t.trim().toLowerCase()}`;
+                            console.log("adding tag", tag);
+                            if (addedTags.find((q) => q.w === group.word)) {
+                              setAddedTags((prev) =>
+                                prev.map((atw) => {
+                                  return atw.w === group.word
+                                    ? {
+                                        ...atw,
+                                        t: atw.t.includes(tag)
+                                          ? atw.t.filter((z) => z !== tag)
+                                          : [...atw.t, tag],
+                                      }
+                                    : atw;
+                                }),
+                              );
+                            } else {
+                              setAddedTags((prev) => [
+                                ...prev,
+                                { w: group.word, t: [tag] },
+                              ]);
+                            }
+                          }}
+                          removedTags={
+                            removedTags.find((q) => q.w === group.word)?.t
+                          }
+                          toggleExistingTag={(tag) => {
+                            if (removedTags.find((q) => q.w === group.word)) {
+                              setRemovedTags((prev) =>
+                                prev.map((rtw) => {
+                                  return rtw.w === group.word
+                                    ? {
+                                        ...rtw,
+                                        t: rtw.t.includes(tag)
+                                          ? rtw.t.filter((z) => z !== tag)
+                                          : [...rtw.t, tag],
+                                      }
+                                    : rtw;
+                                }),
+                              );
+                            } else {
+                              setRemovedTags((p) => [
+                                ...p,
+                                { w: group.word, t: [tag] },
+                              ]);
+                            }
+                          }}
+                          inDB={existingWordList.filter((w) => {
+                            return (
+                              w.word === group.word &&
+                              !!group.readings.find((r) =>
+                                w.reading.includes(r),
+                              )
+                            );
+                          })}
+                          nth={i}
+                          canSelect={group.canSelect}
+                          selectedEntSeqs={selected}
+                          entSeqArr={group.ent_seq_arr}
+                          onClickReading={
+                            group.canSelect ? handleClickReading : undefined
+                          }
+                        />
+                      </div>
+                    </div>
+                    {selectedEntSeqs.length > 0 && (
+                      <span className="absolute top-2 right-3 z-10 rounded-full border border-green-300 bg-green-600 px-3 py-1 text-xs font-bold text-white shadow-inner">
+                        {selectedEntSeqs.length >= 2
+                          ? `✓ ×${selectedEntSeqs.length}`
+                          : "✓"}
+                      </span>
+                    )}
                   </div>
-                </div>
-                {selectedEntSeqs.length > 0 && (
-                  <span className="absolute top-2 right-3 z-10 rounded-full border border-green-300 bg-green-600 px-3 py-1 text-xs font-bold text-white shadow-inner">
-                    {selectedEntSeqs.length >= 2
-                      ? `✓ ×${selectedEntSeqs.length}`
-                      : "✓"}
-                  </span>
-                )}
-              </div>
-            );
-          } else {
-            const isSelected = selected.includes(group.ent_seq);
+                );
+              } else {
+                const isSelected = selected.includes(group.ent_seq);
 
-            const handleClick = group.canSelect
-              ? (e: React.MouseEvent<HTMLDivElement>) => {
-                  e.stopPropagation();
-                  if (isSelected) {
-                    setSelected((prev) =>
-                      prev.filter((x) => x !== group.ent_seq),
-                    );
-                  } else {
-                    setSelected((prev) =>
-                      prev.includes(group.ent_seq)
-                        ? prev
-                        : [...prev, group.ent_seq],
-                    );
-                  }
-                }
-              : undefined;
+                const handleClick = group.canSelect
+                  ? (e: React.MouseEvent<HTMLDivElement>) => {
+                      e.stopPropagation();
+                      if (isSelected) {
+                        setSelected((prev) =>
+                          prev.filter((x) => x !== group.ent_seq),
+                        );
+                      } else {
+                        setSelected((prev) =>
+                          prev.includes(group.ent_seq)
+                            ? prev
+                            : [...prev, group.ent_seq],
+                        );
+                      }
+                    }
+                  : undefined;
 
-            return (
-              <KanaOnlyRecord
-                key={group.id}
-                nth={i}
-                word={group.word}
-                reading={group.reading}
-                kEleInfo={group.kEleInfo}
-                rEleInfo={group.rEleInfo}
-                meaning={group.meaning}
-                tags={[
-                  ...(group.kEleInfo ?? []),
-                  ...(group.rEleInfo ?? []),
-                ].map((q) => ({ name: q }))}
-                isSelected={isSelected}
-                onClick={handleClick}
-                data-seq={group.ent_seq}
-                data-can-select={group.canSelect ? "true" : "false"}
-              />
-            );
-          }
-        })}
-      </div>
+                return (
+                  <KanaOnlyRecord
+                    key={group.id}
+                    nth={i}
+                    word={group.word}
+                    reading={group.reading}
+                    kEleInfo={group.kEleInfo}
+                    rEleInfo={group.rEleInfo}
+                    meaning={group.meaning}
+                    tags={[
+                      ...(group.kEleInfo ?? []),
+                      ...(group.rEleInfo ?? []),
+                    ].map((q) => ({ name: q }))}
+                    isSelected={isSelected}
+                    onClick={handleClick}
+                    data-seq={group.ent_seq}
+                    data-can-select={group.canSelect ? "true" : "false"}
+                  />
+                );
+              }
+            })}
+          </div>
+        </>
+      ) : (
+        <div
+          className={cn(
+            `flex h-full w-full justify-center bg-slate-900 bg-linear-to-br to-slate-950 align-middle`,
+          )}
+        >
+          <Spinner spinnerStyle={{ className: "w-64 h-64" }} />
+        </div>
+      )}
     </div>
   );
 }

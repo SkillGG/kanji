@@ -44,7 +44,7 @@ import type { Seed, SessionScope } from "~/lib/sessionScope";
 import { extractTags } from "~/lib/tags";
 
 import chalk from "chalk";
-import { containsKanji } from "~/lib/seed";
+import { containsKanji } from "~/lib/jp";
 
 export const setWordTags = async (
   db: DrizzleClient,

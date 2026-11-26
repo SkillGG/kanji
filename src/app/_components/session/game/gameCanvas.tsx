@@ -37,7 +37,6 @@ export function DrawCanvas({
     setHistory([]);
   }, [idxRefresh]);
 
-  // Redraw committed green lines whenever `lines` updates and user isn't mid-stroke
   useEffect(() => {
     if (drawing) return;
     const ctx = canvasRef.current?.getContext("2d");
@@ -70,10 +69,7 @@ export function DrawCanvas({
       height={size.y}
       tabIndex={0}
       onKeyDown={(e) => {
-        console.log("(canvas, okd)", e.code);
-        if (!canDraw) {
-          return;
-        }
+        if (!canDraw) return;
         if (e.code === "KeyR") {
           setLines([]);
           setHistory([]);
@@ -82,8 +78,6 @@ export function DrawCanvas({
         }
       }}
       onPointerDown={(e) => {
-        console.log("(canvas, opd)", e.pointerType, e.pointerId, e.buttons);
-
         if (!canDraw) return;
         e.currentTarget.setPointerCapture(e.pointerId);
         const ctx = canvasRef.current?.getContext("2d");

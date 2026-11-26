@@ -1,5 +1,23 @@
 import { cn } from "cn";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
+import { autoGuessReading, containsKanji } from "~/lib/jp";
+
+const redot = (arr: string[]): string[] => {
+  const narr = [...arr];
+  for (let i = narr.length - 1; i >= 0; i--) {
+    const t = narr[i];
+    const p = narr[i - 1];
+    if (t) return narr;
+    if (p) return narr;
+    // console.log("Redotting", narr, i);
+    narr.splice(i, 1);
+  }
+  console.log("Redoted ", arr.join("."), narr.join("."));
+  return narr;
+};
+
+const autoOkurigana = (word: string, read: string): string[] =>
+  redot(autoGuessReading(word, read));
 
 export function OkuriganaInputDialog({
   open,
@@ -38,7 +56,17 @@ export function OkuriganaInputDialog({
       setCurWord((p) => p + 1);
       resetCursor();
     }, 0);
-    if (curWord) updateReading(curWord.id, [curReading.join(".")]);
+    if (curWord) updateReading(curWord.id, [redot(curReading).join(".")]);
+  };
+
+  const onPrevClick = () => {
+    if (curWordIdx > 0) {
+      setTimeout(() => {
+        setCurWord((p) => p - 1);
+        resetCursor();
+      }, 0);
+      if (curWord) updateReading(curWord.id, [redot(curReading).join(".")]);
+    }
   };
 
   let crStartPos = -1;
@@ -73,12 +101,14 @@ export function OkuriganaInputDialog({
 
   const removeOnCursor = () => {
     setCurReading((p) => {
-      return p.map((r, ri) => {
-        return r
-          .split("")
-          .filter((_, ki) => !isInCursor(ri, ki, true))
-          .join("");
-      });
+      return redot(
+        p.map((r, ri) => {
+          return r
+            .split("")
+            .filter((_, ki) => !isInCursor(ri, ki, true))
+            .join("");
+        }),
+      );
     });
     setTimeout(moveCursorNextSegment);
   };
@@ -92,11 +122,13 @@ export function OkuriganaInputDialog({
       const [start, end] = [cursor.on[1], cursor.on[1] + (cursor.len || 1)];
       cursorCutout.push(spl.substring(0, start), "-", spl.substring(end));
 
-      return p.flatMap((r, ri) => {
-        return seg === ri
-          ? cursorCutout.filter(Boolean).map((q) => (q === "-" ? "" : q))
-          : r;
-      });
+      return redot(
+        p.flatMap((r, ri) => {
+          return seg === ri
+            ? cursorCutout.filter(Boolean).map((q) => (q === "-" ? "" : q))
+            : r;
+        }),
+      );
     });
     const c = cursor.on[0];
     setTimeout(() => setCursor({ on: [c + 1, 0], len: 0 }));
@@ -117,7 +149,7 @@ export function OkuriganaInputDialog({
       );
       const swap = cursorCutout.filter(Boolean);
       nP.splice(ri, swap.length, ...swap);
-      return nP;
+      return redot(nP);
     });
     const c = cursor.on[0];
     setTimeout(() => {
@@ -125,8 +157,14 @@ export function OkuriganaInputDialog({
     }, 0);
   };
 
-  const reset = () => {
-    setCurReading((p) => curWord?.reading[0]?.split(".") ?? []);
+  const reset = (noAuto?: boolean) => {
+    if (curWord) {
+      const cwr = curWord.reading[0];
+      if (cwr)
+        setCurReading(
+          redot(noAuto ? cwr.split(".") : autoOkurigana(curWord.word, cwr)),
+        );
+    }
     setTimeout(resetCursor);
   };
 
@@ -178,15 +216,6 @@ export function OkuriganaInputDialog({
   const moveCursorLeft = () => {
     let newSeg = cursor.on[0];
     let newPos = cursor.on[1] - 1;
-    const resCur = () => {
-      setCursor({
-        on: [
-          curReading.length - 1,
-          (curReading[curReading.length - 1]?.length ?? 1) - 1,
-        ],
-        len: 0,
-      });
-    };
 
     if (newPos < 0) moveCursorPrevSegment(true);
     else setCursor({ on: [newSeg, newPos], len: 0 });
@@ -209,7 +238,7 @@ export function OkuriganaInputDialog({
       setCurWord((p) => p + 1);
       return;
     }
-    setCurReading(read.split("."));
+    setCurReading(redot(autoOkurigana(cW.word, read)));
   }, [curWordIdx]);
 
   useEffect(() => {
@@ -221,23 +250,26 @@ export function OkuriganaInputDialog({
       if (words.length > 0) {
         const cW = words[0];
         if (cW && cW.reading.length > 0) {
-          setCurReading(cW.reading[0]?.split(".") ?? []);
+          const cWr = cW.reading[0];
+          if (cWr) setCurReading(redot(autoOkurigana(cW.word, cWr)));
         }
       }
     }
+    // @ts-ignore
+    window.containsKanji = containsKanji;
   }, [open]);
 
   useEffect(() => {
     function handleKeyEvents(e: KeyboardEvent) {
-      console.log("Okurigana captured event!");
+      // console.log("Okurigana captured event!", e.code);
       switch (e.code) {
         case "Enter":
-        case "Backquote":
+        case "Tab":
           onNextClick();
           resetCursor();
           e.preventDefault();
           break;
-        case "Tab":
+        case "KeyX":
           removeOnCursor();
           setTimeout(() => onNextClick(), 100);
           e.preventDefault();
@@ -252,7 +284,7 @@ export function OkuriganaInputDialog({
           break;
         case "KeyR":
           e.preventDefault();
-          reset();
+          reset(e.shiftKey);
           break;
         case "Space":
           e.preventDefault();
@@ -287,6 +319,9 @@ export function OkuriganaInputDialog({
           if (!num) break;
           setCursor((p) => ({ ...p, len: num }));
           break;
+        case "Backspace":
+          onPrevClick();
+          break;
         default:
           break;
       }
@@ -304,6 +339,8 @@ export function OkuriganaInputDialog({
 
   if (!open) return null;
   if (done) return null;
+
+  // console.log(curReading);
   return (
     <div
       className="fixed top-0 left-0 z-50 flex h-screen w-screen items-center justify-center bg-black/70 text-white select-none"
@@ -322,6 +359,59 @@ export function OkuriganaInputDialog({
           </div>
         ) : (
           <>
+            <div
+              className={cn(`absolute top-2 right-2 text-xs text-slate-100/60`)}
+            >
+              {curReading.map((r, i) =>
+                i === curReading.length - 1 ? (
+                  r
+                ) : (
+                  <Fragment key={`reading_${r + i}_${curWord}`}>
+                    {r}
+                    <span className={cn(`text font-bold text-red-500`)}>.</span>
+                  </Fragment>
+                ),
+              )}
+            </div>
+            <div
+              className={cn(
+                `absolute top-4 -right-10 flex w-10 flex-col overflow-hidden rounded-r-xl border border-l-0 border-blue-500 bg-slate-500 py-1`,
+              )}
+            >
+              <button
+                className={cn(
+                  `cursor-pointer border-b-2 border-black bg-slate-500/40 hover:bg-slate-700/60`,
+                )}
+                onClick={() => {
+                  splitOnCursor();
+                }}
+                title="Split (Space)"
+              >
+                Sp
+              </button>
+              <button
+                className={cn(
+                  `cursor-pointer border-b-2 border-black bg-slate-500/40 hover:bg-slate-700/60`,
+                )}
+                onClick={() => {
+                  removeOnCursor();
+                }}
+                title="Remove (q)"
+              >
+                Rm
+              </button>
+              <button
+                className={cn(
+                  `cursor-pointer bg-slate-500/40 hover:bg-slate-700/60`,
+                )}
+                onClick={() => {
+                  removeSingleAsABlock();
+                }}
+                title="Cut [Split + Remove] (s)"
+              >
+                Cut
+              </button>
+            </div>
             <div
               className={cn("grid grid-flow-col text-white")}
               style={{
@@ -392,16 +482,28 @@ export function OkuriganaInputDialog({
                 );
               })}
             </div>
-            <button
-              className={cn(
-                `cursor-pointer rounded-xl border border-green-400 bg-emerald-800/30 px-4 py-2 text-xl hover:bg-emerald-200/20`,
-                `mt-2 ml-auto block`,
-              )}
-              title={"Go to next okurigana check (Enter)"}
-              onClick={onNextClick}
-            >
-              Next
-            </button>
+            <div className={cn(`mt-2 flex justify-end gap-2`)}>
+              <button
+                className={cn(
+                  `cursor-pointer rounded-xl border border-orange-400 bg-orange-800/30 px-4 py-2 text-xl hover:bg-orange-200/20`,
+                  `block`,
+                )}
+                title={"Go to previous okurigana check (Enter)"}
+                onClick={onPrevClick}
+              >
+                Prev
+              </button>
+              <button
+                className={cn(
+                  `cursor-pointer rounded-xl border border-green-400 bg-emerald-800/30 px-4 py-2 text-xl hover:bg-emerald-200/20`,
+                  `block`,
+                )}
+                title={"Go to next okurigana check (Enter)"}
+                onClick={onNextClick}
+              >
+                Next
+              </button>
+            </div>
           </>
         )}
       </div>

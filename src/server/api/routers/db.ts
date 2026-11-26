@@ -11,10 +11,11 @@ export type DicEntry = {
 };
 
 import KanjiData from ".assets/jmdict.json";
-import { containsKanji } from "~/lib/seed";
+import { containsKanji } from "~/lib/jp";
 import { KANJIPERPAGE, qb, WORDSPERPAGE } from "~/lib/db";
 import {
   dedupe,
+  escapeRegexPattern,
   getFullWordRading,
   hasDefinedProp,
   isTruthy,
@@ -524,9 +525,51 @@ export const dbRouter = createTRPCRouter({
       });
     }),
   getSeedData: publicProcedure
-    .input(z.object({ slice: z.tuple([z.number(), z.number()]) }))
-    .query(({ input: { slice } }) => {
-      return getSortedSeedData().slice(...slice);
+    .input(
+      z.object({
+        slice: z.tuple([z.number(), z.number()]),
+        search: z.string().default(""),
+      }),
+    )
+    .query(({ input: { slice, search: fnd } }) => {
+      const data = getSortedSeedData();
+      if (!fnd) {
+        return { seedData: data.slice(...slice), len: data.length };
+      }
+      console.log("You set fnd in seed! This may take a while!");
+      const pattern = /^\/(?<pattern>.*?)\/(?<flags>)$/.exec(fnd);
+      const escapedFind = `${escapeRegexPattern(fnd)}`;
+      const rx = new RegExp(
+        pattern?.groups?.pattern ?? escapedFind,
+        pattern?.groups?.flags ?? "",
+      );
+      console.log(
+        "[rx]",
+        rx,
+        data[0]?.sense[0]?.glos,
+        data[0]?.sense[0]?.glos?.[0]?.match(rx),
+      );
+      const search = data.filter((q) => {
+        return (
+          q.sense.some(
+            (s) =>
+              s.glos.some((x) => !!x.match(rx)) ||
+              s.pos.some((x) => !!x.match(rx)) ||
+              s.info.some((x) => !!x.match(rx)),
+          ) ||
+          q.k_ele.some(
+            (s) =>
+              s.info.some((x) => !!x.match(rx)) ||
+              s.word.some((x) => !!x.match(rx)),
+          ) ||
+          q.r_ele.some(
+            (s) =>
+              s.info.some((x) => !!x.match(rx)) ||
+              s.readings.some((x) => !!x.match(rx)),
+          )
+        );
+      });
+      return { seedData: search.slice(...slice), len: search.length };
     }),
 
   getKanjiJishoData: publicProcedure

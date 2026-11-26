@@ -14,10 +14,10 @@ export const DBList = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const [wpage, setWpage] = useState(
+  const [_wpage, setWpage] = useState(
     () => +(searchParams.get("wpage") ?? 0) || 0,
   );
-  const [kpage, setKpage] = useState(
+  const [_kpage, setKpage] = useState(
     () => +(searchParams.get("kpage") ?? 0) || 0,
   );
   const [wpp, setWpp] = useState(
@@ -31,6 +31,8 @@ export const DBList = () => {
 
   const { value: wordSearch } = useDebounce(_wordSearch, { delay: 500 });
   const { value: kanjiSearch } = useDebounce(_kanjiSearch, { delay: 500 });
+  const { value: wpage } = useDebounce(_wpage, { delay: 50 });
+  const { value: kpage } = useDebounce(_kpage, { delay: 50 });
 
   useEffect(() => {
     const newWpage = +(searchParams.get("wpage") ?? 0) || 0;
@@ -58,14 +60,14 @@ export const DBList = () => {
       if ((def !== undefined && def === v) || (def === undefined && !v))
         nParams.delete(k);
     };
-    toggleParam("kpage", kpage);
-    toggleParam("wpage", wpage);
+    toggleParam("kpage", _kpage);
+    toggleParam("wpage", _wpage);
     toggleParam("kpp", kpp, KANJIPERPAGE);
     toggleParam("wpp", wpp, WORDSPERPAGE);
     toggleParam("qk", kanjiSearch);
     toggleParam("qw", wordSearch);
     router.replace(`?${nParams}`);
-  }, [kpage, wpage, kpp, wpp, kanjiSearch, wordSearch]);
+  }, [_kpage, _wpage, kpp, wpp, kanjiSearch, wordSearch]);
 
   const { data: wordCount = 0 } = api.db.countWords.useQuery({
     search: wordSearch ? wordSearch : undefined,
@@ -79,7 +81,7 @@ export const DBList = () => {
     isPending: pendingWords,
   } = api.db.getWords.useQuery({
     limit: wpp,
-    page: wpage,
+    page: wpage < 0 ? 0 : wpage,
     search: !!wordSearch ? wordSearch : undefined,
   });
   const {
@@ -88,14 +90,42 @@ export const DBList = () => {
     isPending: penidngKanji,
   } = api.db.getKanji.useQuery({
     limit: kpp,
-    page: kpage,
+    page: kpage < 0 ? 0 : kpage,
     search: !!kanjiSearch ? kanjiSearch : undefined,
   });
 
   const utils = api.useUtils();
 
+  useEffect(() => {
+    if (wpage > 0)
+      utils.db.getWords.prefetch({
+        limit: wpp,
+        page: wpage - 1,
+        search: !!wordSearch ? wordSearch : undefined,
+      });
+    utils.db.getWords.prefetch({
+      limit: wpp,
+      page: wpage + 1,
+      search: !!wordSearch ? wordSearch : undefined,
+    });
+  }, [wpage, wordSearch, wpp]);
+
+  useEffect(() => {
+    if (kpage > 0)
+      utils.db.getKanji.prefetch({
+        limit: kpp,
+        page: kpage - 1,
+        search: !!kanjiSearch ? kanjiSearch : undefined,
+      });
+    utils.db.getKanji.prefetch({
+      limit: kpp,
+      page: kpage + 1,
+      search: !!kanjiSearch ? kanjiSearch : undefined,
+    });
+  }, [kpage, kanjiSearch, kpp]);
+
   return (
-    <main className="flex min-h-screen w-full gap-4 bg-slate-800 p-4 text-white">
+    <main className="flex max-h-screen min-h-screen w-full gap-4 bg-slate-800 p-4 text-white">
       <section className="flex w-1/2 max-w-1/2 flex-col border-r-2 border-slate-700 px-4">
         <div className="pb-4 text-center text-2xl font-bold text-slate-100">
           言葉
@@ -129,18 +159,40 @@ export const DBList = () => {
           >
             <button
               className="cursor-pointer rounded border border-slate-600 bg-slate-800 px-3 py-1 font-bold text-white hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
-              disabled={wpage <= 0}
+              disabled={_wpage <= 0}
               onClick={() => setWpage((p) => p - 1)}
               title="Previous page"
             >
               &lt;
             </button>
             <span className="min-w-8 px-2 text-center text-lg font-semibold tracking-wider text-blue-200">
-              {wpage + 1} / {Math.ceil(wordCount / WORDSPERPAGE)}
+              <input
+                onClick={(e) => {
+                  e.currentTarget.select();
+                }}
+                className={cn(
+                  `inline border-blue-500 text-center outline-none`,
+                  `focus:border-b active:border-b`,
+                )}
+                style={{ width: `${`${_wpage + 1}`.length}em` }}
+                value={_wpage < 0 ? "" : _wpage + 1}
+                onChange={(e) => {
+                  const iVal = parseInt(e.currentTarget.value);
+                  if (
+                    !isNaN(iVal) &&
+                    iVal <= Math.ceil(wordCount / WORDSPERPAGE)
+                  ) {
+                    setWpage(iVal - 1);
+                  } else {
+                    setWpage(-1);
+                  }
+                }}
+              />
+              / {Math.ceil(wordCount / WORDSPERPAGE)}
             </span>
             <button
               className="cursor-pointer rounded border border-slate-600 bg-slate-800 px-3 py-1 font-bold text-white hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
-              disabled={wpage + 1 >= Math.ceil(wordCount / WORDSPERPAGE)}
+              disabled={_wpage + 1 >= Math.ceil(wordCount / WORDSPERPAGE)}
               onClick={() => setWpage((p) => p + 1)}
               title="Next page"
             >
@@ -197,7 +249,7 @@ export const DBList = () => {
           >
             <button
               className="cursor-pointer rounded border border-slate-600 bg-slate-800 px-3 py-1 font-bold text-white hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
-              disabled={kpage <= 0}
+              disabled={_kpage <= 0}
               onClick={() => {
                 setKpage((p) => --p);
               }}
@@ -206,11 +258,33 @@ export const DBList = () => {
               &lt;
             </button>
             <span className="min-w-8 px-2 text-center text-lg font-semibold tracking-wider text-blue-200">
-              {kpage + 1} / {Math.ceil(kanjiCount / KANJIPERPAGE)}
+              <input
+                onClick={(e) => {
+                  e.currentTarget.select();
+                }}
+                className={cn(
+                  `inline border-blue-500 text-center outline-none`,
+                  `focus:border-b active:border-b`,
+                )}
+                style={{ width: `${`${_kpage + 1}`.length}em` }}
+                value={_kpage < 0 ? "" : _kpage + 1}
+                onChange={(e) => {
+                  const iVal = parseInt(e.currentTarget.value);
+                  if (
+                    !isNaN(iVal) &&
+                    iVal <= Math.ceil(kanjiCount / KANJIPERPAGE)
+                  ) {
+                    setKpage(iVal - 1);
+                  } else {
+                    setKpage(-1);
+                  }
+                }}
+              />
+              / {Math.ceil(kanjiCount / KANJIPERPAGE)}
             </span>
             <button
               className="cursor-pointer rounded border border-slate-600 bg-slate-800 px-3 py-1 font-bold text-white hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
-              disabled={kpage + 1 >= Math.ceil(kanjiCount / KANJIPERPAGE)}
+              disabled={_kpage + 1 >= Math.ceil(kanjiCount / KANJIPERPAGE)}
 
               onClick={() => setKpage((p) => ++p)}
               title="Next page"
